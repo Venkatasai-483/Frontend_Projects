@@ -1,0 +1,307 @@
+* {
+    box-sizing: border-box;
+    margin: 0px;
+    padding: 0px;
+}
+
+/* --------------------------------------------------------------Nav-bar-2 ------------------------------------------------------------------ */
+.search-icon {
+    position: absolute;
+    top: 10px;
+    right: 10%;
+}
+
+.love-cart-icon {
+    width: 40px;
+    height: 40px;
+    border: 1px solid rgb(221, 218, 218);
+    border-radius: 50%;
+    padding: 10px;
+}
+
+.supersc {
+    position: relative;
+    right: 10px;
+    background-color: rgb(49, 152, 243);
+    font-size: small;
+    width: 25px;
+    height: 25px;
+    line-height: 22px;
+    text-align: center;
+    border-radius: 50%;
+    vertical-align: super;
+}
+
+.hot {
+    text-align: center;
+    width: 40px;
+    height: 25px;
+    line-height: 5px;
+    background-color: rgb(255, 60, 0);
+    border-radius: 30%;
+    font-size: small;
+    border: 1px solid rgb(221, 218, 218);
+    vertical-align: super;
+}
+
+/* ----------------------------------------------------------------Banner--------------------------------------------------------- */
+.winter div:last-of-type p:nth-of-type(2) {
+    font-family: serif;
+    font-size: 60px;
+}
+
+.winter div:last-of-type p:first-of-type {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+/* ----------------------------------------------------------------Categories--------------------------------------------------------- */
+.categ {
+    margin-left: 70px;
+    margin-right: 70px;
+}
+
+/* ----------------------------------------------------------------Latest Products--------------------------------------------------------- */
+.latest {
+    margin-left: 250px;
+    margin-right: 250px;
+}
+
+.latest h2 {
+    font-size: xx-large;
+    font-family: serif;
+    font-weight: bolder;
+}
+
+.latest-cards {
+    margin-left: 230px;
+    margin-right: 230px;
+}
+
+@media only screen and (min-width:1200px) and (max-width:1500px) {
+    .latest-cards {
+        margin-left: 150px;
+        margin-right: 150px;
+    }
+
+    .latest-cards>div {
+        width: 200rem;
+    }
+}
+
+@media only screen and (min-width:992px) and (max-width:1200px) {
+    .latest-cards {
+        margin-left: 100px;
+        margin-right: 100px;
+    }
+}
+
+@media only screen and (min-width:768px) and (max-width:992px) {
+    .latest-cards {
+        margin-left: 100px;
+        margin-right: 100px;
+    }
+}
+
+@media only screen and (min-width:576px) and (max-width:768px) {
+    .latest-cards {
+        margin-left: 100px;
+        margin-right: 100px;
+    }
+    .latest{
+        margin-left: 140px;
+        margin-right: 140px;
+    }
+    .latest h2 {
+        font-size: x-large;
+        font-family: serif;
+        font-weight: bolder;
+    }
+}
+
+/* --------------------------------------------------------------- Carry-Bag ------------------------------------------------------------------ */
+.carry-bag {
+    height: 400px;
+    margin-top: 30px;
+    margin-left: 150px;
+    margin-right: 150px;
+}
+
+.carry-bag img:first-of-type {
+    height: 400px;
+}
+
+@media only screen and (min-width:775px) and (max-width:880px) {
+    .carry-bag {
+        margin-left: 100px;
+        margin-right: 100px;
+    }
+}
+
+@media only screen and (min-width:575px) and (max-width:775px) {
+    .carry-bag {
+        margin-left: 50px;
+        margin-right: 50px;
+    }
+}
+
+/* --------------------------------------------------------------- Carry-Helmet --------------------------------------------------------------- */
+.carry-helmet {
+    height: 500px;
+    margin-top: 100px;
+    margin-left: 150px;
+    margin-right: 150px;
+}
+
+.carry-helmet p:first-of-type {
+    font-size: 40px;
+}
+
+.carry-helmet img:first-of-type {
+    height: 500px;
+}
+
+.carry-helmet .helmet div>span:first-of-type:hover {
+    color: white;
+    background-color: blue;
+    border: 0px solid;
+    border-radius: 5px;
+}
+
+@media only screen and (min-width:775px) and (max-width:995px) {
+    .carry-helmet {
+        margin-left: 100px;
+        margin-right: 100px;
+    }
+
+    .carry-helmet p:first-of-type {
+        font-size: 35px;
+    }
+}
+
+@media only screen and (min-width:575px) and (max-width:775px) {
+    .carry-helmet {
+        margin-left: 50px;
+        margin-right: 50px;
+        height: 360px;
+    }
+
+    .carry-helmet p:first-of-type {
+        font-size: 25px;
+    }
+
+    .carry-helmet img:first-of-type {
+        height: 360px;
+    }
+
+    .carry-helmet .helmet div>span:first-of-type {
+        font-size: 12px;
+    }
+}
+
+/* --------------------------------------------------------------- Subscribe --------------------------------------------------------------- */
+.subscribe {
+    margin-top: 100px;
+    margin-left: 150px;
+    margin-right: 150px;
+    height: 150px;
+}
+
+.subscribe p:first-of-type {
+    font-size: 30px;
+}
+
+@media only screen and (min-width:775px) and (max-width:995px) {
+    .subscribe {
+        margin-left: 100px;
+        margin-right: 100px;
+    }
+
+    .subscribe p:first-of-type {
+        font-size: 25px;
+    }
+}
+
+@media only screen and (min-width:575px) and (max-width:775px) {
+    .subscribe {
+        margin-left: 50px;
+        margin-right: 50px;
+    }
+
+    .subscribe p:first-of-type {
+        font-size: 20px;
+    }
+}
+
+/* -------------------------------------------------------- Secure Payments --------------------------------------------------------*/
+.secure {
+    margin-left: 180px;
+    margin-right: 150px;
+}
+
+@media only screen and (min-width:768px) and (max-width:992px) {
+    .secure {
+        margin-left: 90px;
+        margin-right: 70px;
+    }
+}
+
+@media only screen and (min-width:576px) and (max-width:768px) {
+    .secure {
+        margin-left: 70px;
+        margin-right: 50px;
+    }
+}
+
+@media only screen and (min-width:992px) and (max-width:1250px) {
+    .secure {
+        margin-left: 110px;
+        margin-right: 100px;
+    }
+}
+
+/* -------------------------------------------------------- Only-Images --------------------------------------------------------*/
+.images {
+    margin-left: 200px;
+    margin-right: 200px;
+}
+
+.images img {
+    width: 12rem;
+    height: 20rem;
+}
+
+@media only screen and (min-width:576px) and (max-width:768px) {
+    .images {
+        margin-left: 37px;
+        margin-right: 37px;
+    }
+
+    .images img {
+        width: 6rem;
+        height: 15rem;
+    }
+}
+
+@media only screen and (min-width:768px) and (max-width:992px) {
+    .images {
+        margin-left: 50px;
+        margin-right: 50px;
+    }
+
+    .images img {
+        width: 8rem;
+        height: 20rem;
+    }
+}
+
+@media only screen and (min-width:992px) and (max-width:1250px) {
+    .images {
+        margin-left: 50px;
+        margin-right: 50px;
+    }
+
+    .images img {
+        width: 11rem;
+        height: 20rem;
+    }
+}

@@ -1,0 +1,63 @@
+*{
+    box-sizing: border-box;
+}
+body{
+    background-color:whitesmoke;
+}
+section{
+    margin:25vh 35vw;
+    width: 30vw;
+    border: 5px inset aquamarine;
+    border-radius: 10px;
+    padding: 20px;
+    aspect-ratio: 4/3;
+    background-color:rgb(162, 125, 197);
+}
+.div1 div{
+    width: 26.5vw;
+    height: 5.5vh;
+    border: 1px solid black;
+    color: red;
+    padding: 5px;
+    background-color: rgb(225, 225, 225);
+    margin-bottom: 5px;
+    text-align: center;
+    border-radius: 5px;
+    font-size: x-large;
+}
+.div2 input{
+    margin-top: 5px;
+    width: 6.43vw;
+    height: 5vh;
+    text-align: center;
+    border-radius: 8px;
+    font-size: x-large;
+    color:red;
+}
+.div3 input{
+    margin-top: 5px;
+    width: 6.43vw;
+    height: 5vh;
+    text-align: center;
+    border-radius: 8px;
+    font-size: x-large;
+    color:red;
+}
+.div4 input{
+    margin-top: 5px;
+    width: 6.43vw;
+    height: 5vh;
+    text-align: center;
+    border-radius: 8px;
+    font-size: x-large;
+    color:red;
+}
+.div5 input{
+    margin-top: 5px;
+    width: 6.43vw;
+    height: 5vh;
+    text-align: center;
+    border-radius: 8px;
+    font-size: x-large;
+    color:red;
+}
