@@ -1,0 +1,232 @@
+============
+Stream API :
+============
+   -- Stream was one of the major features added to java8.
+   -- It provides a declarative way to deal with the collection of objects in a functional programming style.
+   -- Declarative way means it tells us what to do with data and not how to do with data.
+   -- It is located in the "java.util.stream" package
+
+How many ways we can create a stream :
+======================================
+
+  1. By using of(T... values) :
+  =============================
+      -- It is a var-arg method that takes a variable number of arguments i.e. Zero or multiple arguments.
+      -- We can also merge one or more streams using of().
+
+      Ex: Stream<String> stream = Stream.of("102","101","106","345");
+
+
+  2. By using empty():
+  ====================
+      -- It is used to create the empty stream.
+
+      Ex: Stream<String> stream2 = Stream.empty();
+
+
+  3. By using iterate(InitialValue T, UnaryOperator<T> f):
+  ========================================================
+      -- It is used to generate an infinite sequence of elements in a stream.
+      -- It takes two arguments one is the initial values and the other is a function to generate the next values based on the previous value.
+      -- It should use limit() to restrict the infinite sequence.
+
+      Ex: Stream<Integer> stream3 = Stream.iterate(40,n->n).limit(10);
+
+  4. By using .builder().build() methods :
+  ========================================
+      -- builder() provides a way to add elements to a stream() dynamically and by adding all the elements we can build the stream by using build().
+
+      Ex: Stream<String> stream4 = Stream.<String>builder()
+                .add("sai")
+                .add("shiva")
+                .add("rama")
+                .build();
+
+  Note:
+  =====
+   -- Once you consume the stream you can't reuse it....if you use it again it will raise an exception saying --->Exception in thread "main" java.lang.IllegalStateException: stream has 
+      already been operated upon or closed.
+
+  ==============================
+  Stream API vs java.io.Stream :
+  ==============================
+    -- Stream API is used to operate on a collection of objects.
+    -- java.io.stream is used to read data from files or write data to files.
+
+
+   =================
+   Stream pipeline :
+   =================
+     -- perform the sequence of operations over the collection of data is called a pipeline.
+      
+     -- Every stream is going to have a source, intermediate operations, and a terminal operation which is known as a stream pipeline.
+      
+        Source--------->zero/more intermediate operations------------>one terminal operations.
+
+     1. source :
+     ===========
+	The source can be collections or arrays, or it can be generated from scratch.
+   
+     2. intermediate operations :
+     ============================
+        -- Intermediate operations return a new stream which is used for further processing.
+        -- All the intermediate operations are lazy evaluations. Lazy evaluation means intermediate operations are not executed until 
+           the terminal operations are invoked on the stream pipeline. (It is also known as "Lazy loading")
+        -- There should be zero or more intermediate operations in the stream pipeline.
+        -- Intermediate operations like filtering, mapping, sorting, etc...
+
+     3. terminal operation :
+     =======================
+        -- Terminal operation consumes the stream and produces a result or side effect. They are used to trigger the process of the 
+           stream pipeline. 
+        -- The terminal operation can be a single output, or it can be a printing or logging statement.
+        -- We should use only one terminal operation in the pipeline.
+
+
+     
+      2. Intermediate operations :
+      ============================
+         a. map() :
+         ==========
+            -- map() operation takes a function as an argument and transforms each element in the input stream by applying a specified 
+               function.
+            -- It always returns a modified stream with the same size.
+
+         b. flatMap() :
+         ==============
+            -- It converts nested streams into a single stream or nested collections into a single collection.
+
+            Ex:
+            ---- 
+             Stream<Integer> stream1 = Stream.of(1,2,3,4,5);
+             Stream<String> stream2 = Stream.of("sai","venkat");
+             Stream.of(stream1,stream2).flatMap(n->n).forEach(System.out::println);
+
+             List<Integer> list1 = new ArrayList<>();
+             list1.add(1);
+             list1.add(2);
+
+             List<Integer> list2 = new ArrayList<>();
+             list2.add(3);
+             list2.add(4);
+
+             List<List<Integer>> list = new ArrayList<>();
+             list.add(list1);
+             list.add(list2);
+
+             list.stream().flatMap(n->n.stream()).forEach(System.out::println); 
+             //"n->n.stream()" this we can replace with Collection::stream
+
+        
+       
+         c. filter() :
+         =============
+            -- filter() operation takes the "Predicate" function as an argument and filters the elements of the stream based on 
+               predicate and returns a new stream with filtered values.
+       
+         d. distinct() :
+         ===============
+            -- distinct() operation removes duplicate elements from the stream and retains unique elements.
+
+         e. sorted() :
+         =============
+            -- sorted() operation is used to sort the collection items in default natural sorting order or customized sorting order.
+            -- sorted() is overloaded in intermediate operations one is for default natural sorting order another for customized sorting
+               order.  
+               
+               Ex: Stream<String> stream = Stream.of("sai", "shiva", "rama", "venkat");
+                   stream.sorted(Comparator.comparing(String::length)).forEach(System.out::println);
+ 
+         f. limit() :
+         ============
+            -- limit() operation is used to limit the size of the stream.
+
+         g. skip() :
+         ===========
+            -- It skips the first n elements of the stream.
+
+
+      3. Terminal Operations :
+      ========================
+         a. forEach() :
+         ==============
+           -- forEach() takes the Consumer function as an argument and this consumer is applied for every element of the stream.
+           -- It is used to iterate over the collection.
+
+         b. toArray():
+         =============
+           -- It is used to convert the stream into a specified array type.
+           -- It takes a function as an argument. This function is used to specify the length of an array.
+          
+           Ex: 
+           ===
+              Stream<String> stream = Stream.of("sai","venkat","shiva");
+              String[] strArr = stream.toArray(length->new String[length]);
+              //"length->new String[length]" this can be replaced with String[]::new
+              System.out.println(Arrays.toString(strArr));    
+
+         b. count() :
+         ============
+           -- It returns the total number of elements in the stream.
+
+         c. reduce():
+         ============
+           -- It is an overloaded method in 3 ways(one argument method, two argument method, three argument method).
+
+           -- Way1: It takes one argument which is the accumulator function which takes two arguments and accumulates it. It returns
+                    an optional.
+              Ex: 
+              ===
+               Stream<Integer> stream1 = Stream.of(1,2,3,4,5);
+               Optional<Integer> sum = stream1.reduce(Integer::sum);
+               System.out.println(sum);// Output: 15 (1 + 2 + 3 + 4 + 5)
+
+
+           -- Way2: It takes two arguments one is the identity value(identity value is used to start the accumulation with this value) and
+                     the other is the accumulator function which takes two arguments and accumulates it. 
+              Ex:
+              ===
+                Stream<Integer> stream2 = Stream.of(1,2,3,4,5);
+                int sum2 = stream2.reduce(0, Integer::sum);
+                System.out.println(sum2); // Output: 15 (0 + 1 + 2 + 3 + 4 + 5)
+      
+
+              
+	 
+        
+
+
+   
+   *****Streams provide us a interesting features like Lazy evaluation and parallel execution which improve the performance when there is a large set of data.
+
+
+
+
+
+
+        int[] arr = {10, 89, 56, 24, 13};
+        Arrays.stream(arr).filter(n -> {
+            boolean flag;
+            if (n % 2 == 0) {
+                System.out.println("count: " + BasicStream.m1());
+                flag = true;
+            } else {
+                flag = false;
+            }
+            return flag;
+        }).forEach(System.out::println);
+
+
+        static int count =0;
+        public static int m1(){
+             count+=1;
+             return count;
+        }
+  
+  
+
+   
+  
+   
+
+	

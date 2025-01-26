@@ -1,0 +1,959 @@
+Springboot Annotations:
+========================
+    1. @SpringbootApplication (line 11)
+    2. @RestController (line 77)
+    3. @RequestMapping (line 139)
+    4. @GetMapping (line 171)
+    5. @PostMapping (line 255)
+    6. @PutMapping (line 306)
+    7. @DeleteMapping (line 345)
+    8. @PatchMapping(line 381)
+    9. @RequestParams(line 410)
+    10. @RequestBody(line 531)
+    11. @ResponseBody(line 628)
+    12. @PathVariable(line 698)
+    13. @Qualifier(line )
+    14. @Primary(line )
+    15. @Configuration(line )
+    16. @Bean(line )
+    
+    1. @SpringbootApplication:
+    ===========================
+        -- The @SpringBootApplication annotation is a "meta-annotation", meaning it’s a combination of several other annotations that provide essential functionalities when 
+           building Spring Boot applications.
+        -- It is used to mark the main class of a Spring Boot application, which serves as the entry point for starting the application.
+        -- It combines the following three annotations:
+        
+        a. @SpringBootConfiguration:
+        =============================
+            -- This is a specialized version of the @Configuration annotation in Spring, which indicates that the class can be used by Spring IoC (Inversion of Control) 
+               container as a source of bean definitions.
+            -- Essentially, this annotation marks the class as a configuration class and enables Java-based configuration.
+            -- It’s used to replace the old XML-based configurations with Java classes.
+            Difference from @Configuration:
+            ================================
+                -- While @SpringBootConfiguration is conceptually similar to @Configuration, the key distinction is that it is specific to Spring Boot.
+                -- It provides additional features required for a Spring Boot application, including support for auto-configuration and integration with Spring Boot’s 
+                   various features.
+            -- However, in cases where you need to build your Spring Boot configuration in a more customized way, you may use @SpringBootConfiguration explicitly. 
+            Ex:
+            ====
+                @SpringBootConfiguration
+                public class MyCustomConfiguration {
+                    @Bean
+                    public String myBean() {
+                        return "This is a custom bean";
+                    }
+                }
+                
+        b. @EnableAutoConfiguration:
+        =============================
+            -- This annotation tells Spring Boot to automatically configure your application based on the dependencies present in your classpath.
+            -- Spring Boot uses auto-configuration to set up things like a database connection, a web server (like Tomcat or Jetty), and various other components based 
+               on the dependencies you have.
+            -- For example, if "spring-boot-starter-web" is in your classpath, it will configure a Spring MVC web application and include an embedded server like Tomcat.
+            
+        c. @ComponentScan:
+        ===================
+            -- This annotation enables component scanning. It tells Spring to scan the package where your main application class is located (and all its sub-packages) for 
+               Spring components (like @Controller, @Service, @Repository, @Component, etc.).
+            -- By default, it scans the package of the class annotated with @SpringBootApplication, so it eliminates the need to explicitly specify the base package for 
+               scanning.
+               
+        2. How @SpringBootApplication Works:
+        =====================================
+            When you place @SpringBootApplication on your main application class, Spring Boot does the following:
+            a. Sets up Application Context: It boots up the Spring ApplicationContext (using @SpringBootConfiguration).
+            b. Auto-Configures Beans: Based on the dependencies in your project, Spring Boot configures a wide range of beans, services, databases, and other components 
+               automatically (using @EnableAutoConfiguration).
+            c. Scans for Components: It scans for Spring beans and components in the same package and sub-packages as your main class (using @ComponentScan).
+            
+        3. Usage Example:
+        ==================
+            @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
+            @ComponentScan(basePackages = {"com.example.service", "com.example.repository"})
+            public class MySpringBootApplication {
+                public static void main(String[] args) {
+                    SpringApplication.run(MySpringBootApplication.class, args);
+                }
+            }
+            
+            -- In this example, the DataSourceAutoConfiguration class (which sets up the database) is excluded from the auto-configuration process.
+            -- If you want to scan specific packages instead of the default, you can add the basePackages attribute to @ComponentScan:
+            -- @SpringBootApplication tells Spring Boot to automatically configure the application, set up beans, and scan for components in the package.
+            -- The SpringApplication.run() method starts the embedded server (if applicable, like Tomcat for a web app) and initializes the Spring context.
+                
+    2. @RestController:
+    ====================
+        -- @RestController is a specialized annotation in Spring Boot (and Spring Framework) used to simplify the development of RESTful web services. 
+        -- It is a combination of two annotations: @Controller and @ResponseBody.
+        1. Purpose of @RestController:
+        ===============================
+            -- In a typical Spring MVC application, you use the @Controller annotation to define a controller class that handles web requests and returns a view 
+               (typically an HTML or JSP page). In RESTful applications, the controller typically returns data (like JSON or XML) instead of a view.
+            -- The @RestController annotation simplifies this by eliminating the need to use @ResponseBody on every handler method. It’s used to create RESTful web 
+               services by directly returning data as a response (usually JSON or XML).
+               
+        2. @RestController in Detail:
+        ==============================
+            -- The @RestController annotation is effectively a combination of two annotations:
+            a. @Controller:
+                This is a Spring MVC annotation that is used to define a class as a web controller. It handles incoming HTTP requests and routes them to the appropriate handler methods.
+            b. @ResponseBody:
+                This annotation is typically used on methods to indicate that the return value of the method should be written directly to the HTTP response body in the 
+                form of JSON, XML, or other formats (instead of rendering a view).
+            -- With @ResponseBody, the return value is automatically serialized into the desired format (e.g., JSON) and sent as the HTTP response.
+            
+        3. How @RestController Works:
+        ==============================
+            -- When you annotate a class with @RestController, Spring:
+            a. Treats it as a controller where every method is implicitly annotated with @ResponseBody.
+            b. Each method’s return value is serialized into the appropriate response format (usually JSON).
+            c. Handles HTTP requests and responses without requiring you to specify @ResponseBody for each individual method.
+            
+        4. Key Features of @RestController:
+        ====================================
+            a. Simplifies REST API Development: With @RestController, you don’t need to specify @ResponseBody on every method. The response is automatically serialized 
+               into JSON or XML (depending on the configuration).
+            b. Automatically Handles Serialization: Spring Boot automatically converts the Java objects returned by the controller into the desired format (JSON or XML)
+               using HttpMessageConverters. By default, JSON is used if Jackson is present in the classpath.
+            c. Easier Handling of HTTP Methods: You can map HTTP methods (like GET, POST, PUT, DELETE) using method-specific annotations like @GetMapping, @PostMapping, 
+               @PutMapping, etc., making the code more readable.
+               
+        5. Returning Data in Different Formats (JSON, XML, etc.):
+        ==========================================================
+            -- By default, Spring Boot uses JSON to serialize objects returned by a @RestController method, but you can configure the application to return other formats like XML.
+            -- Spring uses HttpMessageConverters to automatically convert Java objects into their appropriate response format based on the Content-Type header of the request.
+            Ex:
+            ====
+                JSON: If you have Jackson on your classpath, Spring Boot will automatically use it to convert objects into JSON.
+                XML: If you have Jackson DataFormat XML or JAXB on the classpath, Spring Boot will convert objects into XML when needed.
+                
+        6. Error Handling in @RestController:
+        ======================================
+            @RestController
+            public class EmployeeController {
+                @GetMapping("/employee/{id}")
+                public Employee getEmployeeById(@PathVariable int id) {
+                    return employeeService.findEmployeeById(id)
+                    .orElseThrow(() -> new EmployeeNotFoundException(id));
+                }
+
+                @ExceptionHandler(EmployeeNotFoundException.class)
+                public ResponseEntity<String> handleNotFound(EmployeeNotFoundException ex) {
+                    return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+                }
+            }
+            
+    3. @RequestMapping:
+    ===================
+        -- It is a core annotation in Spring MVC used to map HTTP requests to handler methods in controller classes. It allows you to define the URL path that the 
+           controller method should respond to and specify other details like the HTTP method, request parameters, headers, and more.
+        -- It can be used at both the class level and the method level to create a clean and structured request-handling system.
+        
+        2. @RequestMapping Syntax:
+        ===========================
+            -- The @RequestMapping annotation can take several attributes to control the behavior of the mapping:
+            @RequestMapping(
+              path = "/example",
+              method = RequestMethod.GET,
+              params = "id",
+              headers = "Content-Type=application/json"
+            )
+            
+        Ex:
+        ====
+            @RestController
+            @RequestMapping("/employees")
+            public class EmployeeController {
+                @RequestMapping(method = RequestMethod.GET)
+                public List<Employee> getAllEmployees() {
+                    return employeeService.getAllEmployees();
+                }
+
+                @RequestMapping(method = RequestMethod.POST)
+                public Employee createEmployee(@RequestBody Employee employee) {
+                    return employeeService.saveEmployee(employee);
+                }
+            }
+            
+    4. @GetMapping:
+    ================
+        -- @GetMapping is a specialized annotation in Spring MVC and Spring Boot used to handle HTTP GET requests in web applications or REST APIs.
+           @GetMapping("/path")
+           public String method() {
+               return "response";
+           }
+        -- This is equivalent to:
+           @RequestMapping(value = "/path", method = RequestMethod.GET)
+           public String method() {
+               return "response";
+           }
+           
+        2. Detailed Usage of @GetMapping:
+        ==================================
+            a. Mapping GET Requests to a URL Path:
+            =======================================
+                -- You can map a GET request to a specific path using @GetMapping.
+                -- Here, @GetMapping("/users") maps GET requests to /users and returns a list of all users.
+                Ex:
+                ====
+                    @RestController
+                    public class UserController {
+
+                        @GetMapping("/users")
+                        public List<User> getAllUsers() {
+                            return userService.getAllUsers();
+                        }
+                    }
+                    
+            b. Handling Path Variables:
+            ============================
+                -- You can capture dynamic parts of the URL using path variables with @GetMapping.
+                -- The @PathVariable annotation binds the {id} in the URL to the method parameter id.
+                -- For example, if the request URL is /users/5, the id parameter in the method will have the value 5.
+                Ex:
+                ====
+                    @GetMapping("/users/{id}")
+                    public User getUserById(@PathVariable int id) {
+                        return userService.getUserById(id);
+                    }
+                    
+            c. Handling Query Parameters:
+            ==============================
+                -- You can also handle query parameters in GET requests using the @RequestParam annotation.
+                -- This will handle requests like /users?status=active.
+                -- The @RequestParam binds the query parameter status to the method parameter.
+                Ex:
+                ====
+                    @GetMapping("/users")
+                    public List<User> getUsersByStatus(@RequestParam String status) {
+                        return userService.getUsersByStatus(status);
+                    }
+                    
+            d. Example with Default Value for Query Parameter:
+            ===================================================
+                @GetMapping("/users")
+                public List<User> getUsersByStatus(@RequestParam(defaultValue = "active") String status) {
+                    return userService.getUsersByStatus(status);
+                }
+                
+            e. Producing a Specific Response Format (e.g., JSON or XML):
+            =============================================================
+                -- You can use the produces attribute to specify the media type (content type) of the response.
+                -- This method will only produce JSON as the response format.
+                -- You can also use "application/xml" if you need XML output.
+                Ex:
+                ====
+                    @GetMapping(value = "/users", produces = "application/json")
+                    public List<User> getUsersInJson() {
+                        return userService.getAllUsers();
+                    }
+                    
+            f. Multiple Paths or URL Patterns:
+            ===================================
+                -- You can map a method to multiple paths or patterns using @GetMapping.
+                -- This method will respond to any of /home, /index, or / (the root path).
+                Ex:
+                ==== 
+                    @GetMapping({"/home", "/index", "/"})
+                    public String getHomePage() {
+                        return "Welcome to the home page!";
+                    }
+                    
+    5. @PostMapping:
+    =================
+        -- @PostMapping is a specialized annotation in Spring MVC and Spring Boot used to map HTTP POST requests to specific handler methods in a controller. It is a 
+           shortcut for @RequestMapping(method = RequestMethod.POST) and is typically used when a client sends data to the server, such as form submissions, or when creating new resources in a RESTful API.
+        -- The primary use of @PostMapping is to:
+           a. Map HTTP POST requests to a specific method.
+           b. Handle scenarios where data is sent to the server (for example, creating a new entity or submitting form data).
+           c. In a RESTful API, POST is commonly used for creating resources on the server.
+        Ex:
+        ====
+            @RestController
+            @RequestMapping("/api/users")
+            public class UserController {
+
+                // Create a new user
+                @PostMapping
+                public User createUser(@RequestBody User user) {
+                    return userService.saveUser(user);
+                }
+
+                // Submit form data
+                @PostMapping("/register")
+                public String registerUser(@RequestParam String username, @RequestParam String password) {
+                    return "User registered successfully!";
+                }
+
+                // Upload a file
+                @PostMapping("/upload")
+                public String uploadFile(@RequestParam("file") MultipartFile file) {
+                    // Handle file upload
+                    return "File uploaded successfully!";
+                }
+            }
+            
+        Ex2:
+        =====
+            @PostMapping(
+                value = "/users",
+                consumes = "application/json",
+                produces = "application/json",
+                headers = "X-API-KEY=12345"
+            )
+            public User createUser(@RequestBody User user) {
+                return userService.saveUser(user);
+            }
+            
+        Differences from @RequestMapping:
+        ==================================
+            -- @PostMapping is a specialized version of @RequestMapping, specifically for handling POST requests. While @RequestMapping can handle multiple HTTP methods 
+               and offers more flexibility, @PostMapping is more concise and preferred for simplicity when handling POST requests.
+               
+    6. @PutMapping:
+    ================
+        -- In RESTful web services, the PUT method is commonly used for updating existing resources on the server. The @PutMapping annotation is a shortcut for 
+           @RequestMapping(method = RequestMethod.PUT).
+        -- The primary use of @PutMapping is to map HTTP PUT requests to a method that handles update operations in a REST API.
+        -- It is used when a client wants to update an existing resource (e.g., modifying user data or updating a specific entity).
+        
+        1. Usage of @PutMapping:
+        =========================
+            a. Updating Resources:
+            =======================
+                -- In RESTful web services, you can use @PutMapping to handle requests for updating an existing resource. Typically, you’ll also use the path variable to 
+                   specify which resource (e.g., by id) to update.
+                Ex:
+                ====
+                   @PutMapping("/users/{id}")
+                   public User updateUser(@PathVariable int id, @RequestBody User updatedUser) {
+                       return userService.updateUser(id, updatedUser);
+                   }
+                   
+            b. Handling Partial Updates:
+            =============================
+                -- Although PUT is usually used for full updates (replacing the entire resource), you can design your methods to handle partial updates by including only 
+                   the fields that need to be updated.
+                Ex:
+                ====
+                    @PutMapping("/users/{id}")
+                    public User partiallyUpdateUser(@PathVariable int id, @RequestBody Map<String, Object> updates) {
+                        return userService.partialUpdateUser(id, updates);
+                    }
+                    
+                -- In this case, the updates map contains only the fields that need to be updated, and the service layer handles the logic for applying the changes.
+                
+        2. PUT vs PATCH:
+        =================
+            a. PUT is generally used for full updates or complete replacement of a resource. When using PUT, the entire resource representation is sent, and the server 
+               replaces the old resource with the new one.
+            b. PATCH is used for partial updates. Instead of replacing the entire resource, it modifies specific fields of the resource.
+            
+    7. @DeleteMapping:
+    ===================
+        -- The primary purpose of @DeleteMapping is to map HTTP DELETE requests to a handler method in the controller that will delete a resource on the server.
+        -- It aligns with REST principles where HTTP DELETE requests are used to delete entities or resources.
+        
+        a. Usage of @DeleteMapping:
+        ============================
+            a. Deleting a Resource by ID:
+            ==============================
+                -- You can use @DeleteMapping to delete a resource by its unique identifier, such as an id.
+            Ex:
+            ====
+                @DeleteMapping("/users/{id}")
+                public String deleteUser(@PathVariable int id) {
+                    userService.deleteUserById(id);
+                    return "User deleted successfully";
+                }
+            
+                -- @PathVariable is used to extract the id from the URL path.
+                -- The method deletes the user identified by the provided id.
+                
+            b. Deleting Multiple Resources:
+            ================================
+                -- You can also design @DeleteMapping to handle the deletion of multiple resources at once. 
+            Ex:
+            ====
+                @DeleteMapping("/users")
+                public String deleteUsers(@RequestParam List<Integer> ids) {
+                    userService.deleteUsers(ids);
+                    return "Users deleted successfully";
+                }
+                
+                -- @RequestParam is used to accept a list of ids as query parameters.
+                -- The method deletes all the users whose IDs are provided in the request.
+                -- DELETE "/users?ids=1,2,3"
+                
+    8. @PatchMapping:
+    ==================
+        -- The primary use of @PatchMapping is to map HTTP PATCH requests to a method that handles partial updates in a REST API.
+        -- It allows clients to modify specific fields of a resource rather than replacing the entire resource, which is typically done with PUT requests.
+        
+        1. Usage of @PatchMapping:
+        ===========================
+            a. Partial Update of a Resource:
+            =================================
+                -- You can use @PatchMapping to partially update a resource by specifying only the fields you want to modify.
+            Ex:
+            ====
+                @PatchMapping("/users/{id}")
+                public User partiallyUpdateUser(@PathVariable int id, @RequestBody Map<String, Object> updates) {
+                    return userService.partialUpdateUser(id, updates);
+                }
+                
+                -- @PathVariable is used to bind the URL path {id} to the method parameter id.
+                -- @RequestBody is used to bind the fields provided in the request body to a Map that contains the updates.
+                -- The userService.partialUpdateUser method processes the updates and modifies only the specified fields.
+                
+            Example PATCH Request Body:
+            ============================
+                {
+                    "email": "new.email@example.com"
+                }
+                -- This request will only update the email field of the user with the given id.
+                
+    9. @RequestParam:
+    ==================
+        -- @RequestParam is an annotation in Spring MVC and Spring Boot that is used to bind query parameters or form data from an HTTP request to method parameters in a controller.
+        -- Extract query parameters from the URL of an HTTP request.
+        -- Bind the values to method parameters in a Spring MVC controller.
+        -- Define default values or specify required parameters in request mappings.
+        
+        1. Common Use Cases of @RequestParam:
+        ======================================
+            a. Simple Query Parameter Extraction:
+            ======================================
+                @GetMapping("/search")
+                public String search(@RequestParam String query) {
+                    return "Search result for query: " + query;
+                }
+                -- When the request URL is /search?query=spring, the value of the query parameter spring will be extracted and passed to the query method parameter.
+                
+            b. Multiple Query Parameters:
+            ==============================
+                -- You can extract multiple query parameters using multiple @RequestParam annotations.
+                Ex:
+                ====
+                    @GetMapping("/users")
+                    public String getUserByNameAndAge(@RequestParam String name, @RequestParam int age) {
+                        return "User name: " + name + ", age: " + age;
+                    }
+                    -- If the URL is /users?name=John&age=25, the method will extract both name and age query parameters and bind them to name and age method arguments.
+                    
+        2. Required vs. Optional Parameters:
+        =====================================
+            -- By default, @RequestParam is required. If the parameter is missing from the request, Spring will throw an exception. You can configure a parameter to be 
+               optional by setting "required = false".
+               
+            a. Required Parameter (default behavior):
+            ==========================================
+                -- If the name parameter is missing, Spring throws a MissingServletRequestParameterException.
+                Ex:
+                ====
+                    @GetMapping("/users")
+                    public String getUser(@RequestParam String name) {
+                        return "User: " + name;
+                    }
+                                
+            b. Optional Parameters:
+            ========================
+                -- You can make a parameter optional by setting required = false.
+                -- In this case, the method can handle both /users?name=John and /users (without the name parameter).
+                Ex:
+                ====
+                    @GetMapping("/users")
+                    public String getUser(@RequestParam(required = false) String name) {
+                        if (name == null) {
+                            return "No user name provided";
+                        }
+                        return "User: " + name;
+                    }
+                    
+            c. Providing Default Values:
+            =============================
+                -- You can set a default value for a parameter in case it is not provided in the request.
+                -- If the name parameter is missing, the method will use "Guest" as the default value.
+                Ex:
+                ====
+                    @GetMapping("/users")
+                    public String getUser(@RequestParam(defaultValue = "Guest") String name) {
+                        return "User: " + name;
+                    }
+                    
+        3. Using @RequestParam with a List or Array:
+        =============================================
+            a. Binding to a List:
+            ======================
+                -- @RequestParam can handle multiple values in the query parameter and bind them to a List, Set, or array in the controller method.
+                -- If the query parameter is /users?ids=1,2,3, Spring will bind the values to the ids list as [1, 2, 3].
+                Ex:
+                ====
+                    @GetMapping("/users")
+                    public String getUsersByIds(@RequestParam List<Integer> ids) {
+                        return "User IDs: " + ids;
+                    }
+                
+            b. Binding to an Array:
+            ========================
+                -- Spring will bind the query /users?ids=1,2,3 to the ids array as [1, 2, 3].
+                Ex:
+                ====
+                    @GetMapping("/users")
+                    public String getUsersByIds(@RequestParam Integer[] ids) {
+                        return "User IDs: " + Arrays.toString(ids);
+                    }
+                    
+            c. Handling Multiple Parameters with the Same Name:
+            ====================================================
+                -- If the same query parameter appears multiple times in the request, Spring will collect all values into a list or array.
+                -- For /users?name=John&name=Jane, Spring binds the values to the name list as [John, Jane].
+                Ex:
+                ====
+                    @GetMapping("/users")
+                    public String getUsers(@RequestParam List<String> name) {
+                        return "User names: " + name;
+                    }
+                    
+            d. Handling Validation with @RequestParam:
+            ===========================================
+                -- You can use Java Bean Validation annotations such as @Min, @Max, @NotNull, @Size, etc., to validate @RequestParam values.
+                -- This method ensures that the age parameter is at least 18 and the name parameter is not null.
+                Ex:
+                ==== 
+                    @GetMapping("/validate")
+                    public String validateUser(
+                        @RequestParam @Min(18) int age, 
+                        @RequestParam @NotNull String name) {
+                        return "User name: " + name + ", age: " + age;
+                    }
+                    
+    10. @RequestBody:
+    ==================    
+        -- @RequestBody is an annotation in Spring MVC and Spring Boot used to bind the body of an HTTP request to a method parameter in a controller. It is commonly 
+           used in REST APIs to pass data from the client (in JSON, XML, or other formats) to the server. 
+        -- The data in the request body is automatically converted (deserialized) into a corresponding Java object, which can then be processed within the method.
+        -- Automatically deserializes JSON (or XML, etc.) request body into a Java object using the appropriate "HttpMessageConverter".
+        
+        1. Automatic Deserialization with @RequestBody:
+        ================================================
+            -- Spring uses HttpMessageConverters to automatically convert the incoming request body into the specified Java object. By default, Spring Boot supports 
+               multiple data formats such as:
+               a. JSON (using Jackson library).
+               b. XML (using JAXB or Jackson XML).
+               c. Form URL-encoded (for forms).
+               
+            Example for JSON:
+            ==================
+                -- This method will only handle requests where the Content-Type of the request body is application/json.
+                @PostMapping(value = "/users", consumes = "application/json")
+                public ResponseEntity<User> createUser(@RequestBody User user) {
+                    userService.save(user);
+                    return ResponseEntity.ok(user);
+                }
+                
+            Example for XML:
+            ====================
+                -- This method will only handle requests where the Content-Type of the request body is application/xml.
+                @PostMapping(value = "/users", consumes = "application/xml")
+                public ResponseEntity<User> createUser(@RequestBody User user) {
+                    userService.save(user);
+                    return ResponseEntity.ok(user);
+                }
+                
+        2. Validation with @RequestBody:
+        =================================
+            -- You can validate the request body data by adding Java Bean Validation annotations to the model class and using @Valid or @Validated in the controller method.
+            Ex:
+            ==== 
+                @PostMapping("/users")
+                public ResponseEntity<String> createUser(@Valid @RequestBody User user) {
+                    userService.save(user);
+                    return ResponseEntity.ok("User created successfully");
+                }
+                
+            -- Here, if the User class has validation annotations (like @NotNull, @Min, @Max), Spring will automatically validate the incoming data. If the validation 
+               fails, Spring throws a "MethodArgumentNotValidException".
+            
+            User Model with Validation:
+            ============================
+                public class User {
+                    @NotNull
+                    private String name;
+    
+                    @Min(18)
+                    private int age;
+
+                    // Getters and setters
+                }
+                
+        3. Error Handling for Invalid Request Body:
+        ============================================
+            -- When Spring tries to deserialize the request body into a Java object, it may throw exceptions if the body content is invalid or doesn't match the expected format.
+               a. HttpMessageNotReadableException: Thrown when the request body is invalid or missing.
+               b. MethodArgumentNotValidException: Thrown when the request body fails validation.
+            -- To handle such errors, you can use an @ExceptionHandler method in the controller or a global error handler.
+            Ex:
+            ====
+                @ControllerAdvice
+                public class GlobalExceptionHandler {
+
+                    @ExceptionHandler(HttpMessageNotReadableException.class)
+                    public ResponseEntity<String> handleInvalidBody(HttpMessageNotReadableException ex) {
+                        return ResponseEntity.badRequest().body("Invalid request body");
+                    }
+
+                    @ExceptionHandler(MethodArgumentNotValidException.class)
+                    public ResponseEntity<String> handleValidationException(MethodArgumentNotValidException ex) {
+                        return ResponseEntity.badRequest().body("Validation failed: " + ex.getMessage());
+                    }
+                }
+                
+        4. Handling Lists or Collections with @RequestBody:
+        ====================================================
+            -- You can use @RequestBody to bind a list or collection of objects from the request body.
+            Ex:
+            ====
+                @PostMapping("/users")
+                public ResponseEntity<String> createUsers(@RequestBody List<User> users) {
+                    userService.saveAll(users);
+                    return ResponseEntity.ok("Users created successfully");
+                }
+            -- Here, the request body should contain a JSON array of users:
+            [
+                { "name": "John", "age": 25 },
+                { "name": "Jane", "age": 30 }
+            ]
+
+    11. @ResponseBody:
+    ===================
+        -- The @ResponseBody annotation in Spring is used to indicate that the return value of a controller method should be written directly to the HTTP response body (instead of rendering a 
+           view). It is commonly used in RESTful web services and APIs to send raw data like JSON, XML, or plain text to the client.
+           
+        1. Purpose of @ResponseBody:
+        =============================
+            -- By default, Spring MVC controllers are designed to return a view name (used in web applications to render UI templates like JSP or Thymeleaf).
+            -- When @ResponseBody is used on a method or controller class, the returned data is converted to the desired format (e.g., JSON, XML) and sent directly as the HTTP response body.
+            -- It bypasses the view resolver and instead uses message converters to serialize the data.
+            
+        2. When to Use @ResponseBody:
+        ==============================
+            -- When building REST APIs or microservices.
+            -- When the controller needs to return:
+            -- JSON or XML responses.
+            -- Plain text or raw data (e.g., strings, file content).
+            -- When you don't need to render a view (like HTML pages).
+            
+        3. How It Works:
+        =================
+            -- The method return value is written directly to the HTTP response.
+            -- Spring uses HttpMessageConverters to convert the data into the appropriate format (e.g., JSON).
+            -- The format is determined by the Content-Type of the HTTP request or the Accept header.
+            
+        4. Key Features:
+        =================
+            a. Automatic Conversion:
+            =========================
+                -- When using @ResponseBody, Spring automatically converts Java objects into JSON (or other formats like XML) using Jackson or other libraries.
+
+            b. Bypass View Resolver:
+            =========================
+                -- It skips the view rendering step, directly writing the response body.
+
+            c. Integration with @RestController:
+            =====================================
+                -- @RestController is a combination of @Controller and @ResponseBody.
+                -- When using @RestController, all methods in the class automatically behave as if they were annotated with @ResponseBody.
+                
+        5. Behind the Scenes:
+        ======================
+            -- When you use @ResponseBody, the following happens:
+            -- The HttpMessageConverter resolves the return value:
+               -- JSON (default) -> Uses Jackson library.
+               -- XML (if configured) -> Uses JAXB or similar.
+               -- Plain Text -> Directly writes the string.
+            -- Sets the Content-Type of the response based on the data format.
+            
+        6. Common Issues and Fixes:
+        ============================
+            Issue 1: JSON Serialization Error
+            =====================================
+                -- If you return a Java object with circular references (e.g., bidirectional relationships in entities), serialization may fail.
+                -- Fix: Use @JsonIgnore or @JsonManagedReference and @JsonBackReference annotations from Jackson.
+            
+            Issue 2: Missing Jackson Dependency:
+            =====================================
+                -- If Spring can't convert to JSON, ensure the Jackson dependency is included:
+                    <dependency>
+                        <groupId>com.fasterxml.jackson.core</groupId>
+                        <artifactId>jackson-databind</artifactId>
+                    </dependency>
+                    
+            Issue 3: Incorrect Content-Type:
+            =================================
+                -- If the Content-Type is incorrect, the client might not parse the response.
+                -- Fix: Ensure proper media types are set (e.g., application/json or text/plain).
+                
+    12. @PathVariable:
+    ===================
+        -- In Spring, the @PathVariable annotation is used to extract values from the URL path of a request and bind them to method parameters in a controller. This is particularly useful in 
+           RESTful web services where data is often passed as part of the URI.
+           
+        1. Syntax and Usage:
+        =====================
+            @RestController
+            @RequestMapping("/api")
+            public class MyController {
+
+                @GetMapping("/user/{id}")
+                public String getUserById(@PathVariable int id) {
+                    return "User ID: " + id;
+                }
+            }
+
+            -- {id} in the URL is a placeholder.
+            -- The @PathVariable annotation binds the value 10 to the method parameter id.
+            
+        2. Matching PathVariable Names:
+        ================================
+            a. Same Name Mapping:
+            ======================
+                -- If the name of the placeholder in the URL matches the parameter name, no additional configuration is required.
+                Example:
+                =========
+                    @GetMapping("/product/{productId}")
+                    public String getProduct(@PathVariable int productId) {
+                        return "Product ID: " + productId;
+                    }
+                    
+            b. Explicit Name Mapping:
+            ==========================
+                -- If the parameter name differs from the placeholder, you can explicitly specify it.
+                Example:
+                =========
+                    @GetMapping("/product/{id}")
+                    public String getProduct(@PathVariable("id") int productId) {
+                        return "Product ID: " + productId;
+                    }
+                    
+        3. Multiple @PathVariable Parameters:
+        ======================================
+            -- You can use multiple @PathVariable annotations in the same method.
+            Example:
+            =========
+                @GetMapping("/order/{orderId}/user/{userId}")
+                public String getOrderDetails(@PathVariable int orderId, @PathVariable int userId) {
+                    return "Order ID: " + orderId + ", User ID: " + userId;
+                }
+                
+        4. Optional Path Variables:
+        ============================
+            -- You can make a @PathVariable optional by using required = false and specifying a default value.
+            Example:
+            =========
+                @GetMapping("/item/{id}")
+                public String getItem(@PathVariable(required = false) Integer id) {
+                    if (id == null) {
+                        return "Item ID not provided";
+                    }
+                    return "Item ID: " + id;
+                }
+                
+        5. PathVariable with Map:
+        ==========================
+            -- If you don’t know the exact number or names of path variables, you can capture them as a Map.
+            Example:
+            =========
+                @GetMapping("/params/{param1}/{param2}")
+                public String getParams(@PathVariable Map<String, String> pathVariables) {
+                    return "Param1: " + pathVariables.get("param1") + ", Param2: " + pathVariables.get("param2");
+                }
+                
+        6. Common Issues and Fixes:
+        ============================
+            a. 404 Not Found:
+            ==================
+                Cause: If the URL does not match the mapping or the path variable is missing.
+                Fix: Ensure the path in the URL matches the mapping defined in the controller.
+                
+            b. Type Conversion Error:
+            ==========================
+                Cause: When Spring cannot convert the path variable into the required type.
+                Fix: Ensure the path variable value in the URL matches the expected data type.
+
+            c. Ambiguity with Multiple Mappings:
+            =====================================
+                Cause: Overlapping URL patterns can lead to ambiguity.
+                Fix: Ensure distinct mappings for methods to avoid conflicts.
+                
+
+    13. Qualifier:
+    ==============
+        -- In Spring Boot, @Qualifier and @Primary are annotations used to resolve bean ambiguity when there are multiple beans of the same type in the Spring context. They guide the Spring framework in 
+           deciding which bean should be injected in a particular situation.
+        -- The @Qualifier annotation is used to specify the exact bean to inject when there are multiple beans of the same type.
+
+        a. Why is it needed?
+        =====================
+            -- When there are multiple beans of the same type, Spring cannot determine which one to inject automatically. In such cases, you can use @Qualifier to explicitly specify the bean to be used.
+
+        b. How to Use @Qualifier:
+        ==========================
+            -- Define multiple beans of the same type.
+            -- Use the @Qualifier annotation along with the bean name when injecting the desired bean.
+
+        Example:
+        =========
+            import org.springframework.beans.factory.annotation.Qualifier;
+            import org.springframework.stereotype.Component;
+
+            @Component("beanOne")
+            class ServiceOne implements MyService {
+                @Override
+                public void perform() {
+                    System.out.println("Service One");
+                }
+            }
+
+            @Component("beanTwo")
+            class ServiceTwo implements MyService {
+                @Override
+                public void perform() {
+                    System.out.println("Service Two");
+                }
+            }
+
+            @Component
+            class Client {
+                private final MyService myService;
+
+                // Use @Qualifier to specify which bean to inject
+                public Client(@Qualifier("beanOne") MyService myService) {
+                    this.myService = myService;
+                }
+
+                public void execute() {
+                    myService.perform();
+                }
+            }
+        
+        Output:
+        ========
+            -- Service One
+        
+        -- In this example, Spring will inject ServiceOne into the Client class because of the @Qualifier("beanOne") annotation.
+
+    14. @Primary:
+    =============
+        -- The @Primary annotation is used to mark one bean as the default bean to be injected when no specific @Qualifier is provided.
+
+        a. Why is it needed?
+        =====================
+            -- When there are multiple beans of the same type but only one is frequently used, you can mark that bean as @Primary. Spring will inject the @Primary bean unless a specific @Qualifier is used.
+
+        b. How to Use @Primary:
+        ========================
+            -- Mark one bean with @Primary.
+            -- Inject the bean without specifying a @Qualifier.
+        
+        Example:
+        =========
+            import org.springframework.context.annotation.Primary;
+            import org.springframework.stereotype.Component;
+
+            @Component
+            @Primary // Mark this as the default bean
+            class DefaultService implements MyService {
+                @Override
+                public void perform() {
+                    System.out.println("Default Service");
+                }
+            }
+
+            @Component
+            class AnotherService implements MyService {
+                @Override
+                public void perform() {
+                    System.out.println("Another Service");
+                }
+            }
+
+            @Component
+            class PrimaryClient {
+                private final MyService myService;
+
+                // No @Qualifier, so @Primary bean will be injected
+                public PrimaryClient(MyService myService) {
+                    this.myService = myService;
+                }
+
+                public void execute() {
+                    myService.perform();
+                }
+            }
+        
+        Output:
+        ========
+            -- Default Service
+
+        -- In this case, the DefaultService bean is injected because it is marked with @Primary.
+    
+        @Qualifier and @Primary Together:
+        ==================================
+            -- You can use both annotations in the same application. @Qualifier always overrides @Primary when both are present.
+        
+            Example:
+            =========
+                @Component
+                @Primary // Default bean
+                class DefaultService implements MyService {
+                    @Override
+                    public void perform() {
+                        System.out.println("Default Service");
+                    }
+                }
+
+                @Component()
+                class SpecificService implements MyService {
+                    @Override
+                    public void perform() {
+                        System.out.println("Specific Service");
+                    }
+                }
+
+                @Component
+                class CombinedClient {
+            
+                    @Autowired
+                    @Qualifier("specificService")
+                    private final MyService myService;
+
+                    public void execute() {
+                        myService.perform();
+                    }
+                }
+            
+            Output:
+            ========
+                -- Specific Service
+
+            -- Here, even though DefaultService is marked with @Primary, SpecificService is injected because @Qualifier explicitly specifies it.
+        
+        When to Use Which?
+        ===================
+            a. Use @Primary when:
+            ======================
+                -- One bean is the default choice in most cases.
+                -- There are multiple beans of the same type, but only one is frequently needed.
+
+            b. Use @Qualifier when:
+            ========================
+                -- You need to specify exactly which bean to use.
+                -- You have multiple beans of the same type and the choice depends on the context.
+                
+    15. 
+                
+                
+                

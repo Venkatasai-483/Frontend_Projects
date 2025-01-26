@@ -1,0 +1,99 @@
+17-04-2024(3:00 - 3:30 PM) : Capgemini
+================
+1. Which version of java and features of it...?
+2. What is comparator...?
+3. Which Collections you used...?
+4. Find out duplicate words from a given sentence...?
+5. Types of Errors and Exceptios in java...?
+6. Create Custom Exception class and return the exception message...?
+
+	SpringBoot:
+	=======
+	1. What are annotations you used..?
+	2. If you doesn't give @Autowired annotation on field what will happen...?
+	3. Have you written any Queries and procedures in D.B ..?
+	4. Have you used any annotations on top of JPARepository  methods...?
+	5 .What life cycle you used in your project...?
+	6. What is sprints and how many days  you took to complete on feature...?
+	
+
+18-04-2024(10:30 - 11:00AM) : Capgemini
+=================
+1. Have you have any experience in microservices...?
+2. What is monolithic...?
+3. What is microservices...?
+4. Difference b/w monolithic and microservices...?
+5. what is API gateway...?
+
+6. Sort Employees based on name...?
+7. Write functionalInterface and take one method sum(int a,int b),, implement lambda expression for it...?
+8. What are actuators in spring...?
+9. What is IOC...?
+10. Difference b/w POST and PUT methods...?
+11. Java8 features...?
+.......some more are there i forgetted(Those are normal questions only we know that)
+
+18-04-2024(11:00 - 11:30 AM) : -Accenture
+===================
+1. First he asked about introduced about yourself and current project...?
+2. Do you anything about cloud...?
+3. Do you have knowledge on any technologies apart from Java like(Python/M.L)...?
+4. Which Database you used...?
+5. How do you connect database from application...?
+6. Had you writed any complex queries ...?
+7. What is N+1 issues in Hibernate...?
+8. Difference b/w Stack and Hash(Not collections it about memory in java)...?
+9. Internall working of HashMap...?
+10. Do you know about OAUTH...?
+11. Do you know about Kafka...?
+12. Do you know about cache...?
+13. Do you know about swagger documentation...?
+14. Can you write code for pyramid using stars(*)...?
+15. I have 1000 Employee data ..so here i need fetch 950 employee out of 1000..which data struture you  can use for it...?
+16. What is Singleton design pattern and where you used in your project...?
+
+-------------> some more is there i forgetted
+
+18-04-2024( 12:00 - 12:30 PM) : -Capgemini
+====================
+1. About yourself and current project...?
+2. What all are databases you used in your application...?
+3. Find out second largest number in list...?
+4. Seggregate even and number from list...?
+5. Difference b/w POST and PUT...?
+6. Different types of HTTP Status codes...?
+7. What ORM  framework used in your application...?
+8. Write Pseudo code for Repository class with JPARepository ...?
+9. How can you disable tomcat in springboot...?
+10. We used @Autowired and create object manually using new keyword which one is prioritized here new keyword object or @Autowired bean ...?
+
+
+18-04-2024(2:30 - 3:00) - Capgemini client interview
+================
+1. Asked about project.
+2. How do you validate card number...?
+3. How can you come to know that card is expired or not...?
+4. How can you sort the customer by customer id...?
+
+
+18-04-2024(3:00 - 4:00) : - Grid Dynamics
+================
+1. Asked about project...?
+2. What is Garbage Collectors and types of G.C...?
+3. What is Serialization...?
+4. pros and cons of Serialization...?
+5. Have you used any cache....?
+6. Have you used any OAUTH...?
+7. Http Status code...?
+8. What is Parallel calls and Sequential calls in springboot...?
+9. N+1 problem in Hibernate...?
+10. What are Stored procedures in springboot...?
+11. What was the process behind SpringBoot.run()...?
+12. Have you wrote test cases in application...?
+13. How do you cleared all the bug in application..?
+some more are there................!!!!
+
+
+
+
+

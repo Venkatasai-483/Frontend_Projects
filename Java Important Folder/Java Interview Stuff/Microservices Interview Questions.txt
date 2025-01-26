@@ -1,0 +1,278 @@
+Microservices:
+==============
+
+Monolithic Architecture
+========================
+	--- In monolithic architecture the application is build as a single unit.Such application contains of client side interface, server-side application and a database.
+	--- Normally a monolithic application have one large code base and it lack of modularity.
+	--- The components and modules within the application are highly interconnected and dependent on each other. Changes made to one component may require 
+	modifications in other parts of the application.
+	--- The entire application is deployed as a single unit. Updates or changes to the application require redeploying the entire monolith.
+	
+	Disadvantages:
+	===============
+	--- The code base get larger in size and hence it is very difficult to manage.
+	--- It is very difficult to introduce new technology as it affects the whole application.
+	--- A single bug in any module can bring down the whole application.
+	--- It's very difficult to scale a single module. One has to scale the whole application.
+	--- In order to update one component, we have to redeploy the entire application.
+	
+	
+Microservice Architecture:
+==========================
+	--- Microservices is an architectural style where applications are broken down into smaller, independent services, each service is responsible for performing a specific 
+	business function.These services can be developed, deployed, and maintained independently, allowing for easier scaling, improved fault isolation, and faster development cycles.
+	--- Unlike traditional monolithic architectures, where all functionalities are tightly coupled, Microservices architecture promotes loose coupling, enabling better 
+	manageability and continuous delivery.
+	
+	Advantages:
+	===========
+	--- We can the scale the application easily and performance also improves here because services are independent.
+	--- All the services are independent to each other. Therefore testing and deployment is easy as compare to monolithic.
+	--- It will give flexible to choose technologies and framework for each microservices independently.
+	--- With microservices architecture, it's easy to build complex applications.
+	--- If there is bug in one microservice it has an impact only on a particular service and doesn't affect the entire application.
+	
+	polyglot:
+	==========
+	--- Different microservices uses different technologies.
+	--- Different microservices uses different version of same technology(Java8, Java11).
+	
+	How to Start with Microservices...?
+	====================================
+	1) If you have a monolithic applicatio, identify all possible standalone functionalities.
+	2) Once you have identify them, you need to create independent services.
+	3) You need them to interact with each other through some ways, It can be Rest API's or Messaging.
+	4) But just doing this doesn't make sure that you have implemented microservice architecture.You need load balancer, eureka for service discovery(useful
+	during load balancing and cloud deployments), API gateways and many more stuff.
+	
+	What is Eureka Server...?
+	==========================
+	--- Eureka Server is a service discovery/service registry component commonly used in microservices architectures.  It is designed to manage the registration and discovery of 
+	microservices within a distributed system, allowing them to find and communicate with each other without hardcoding addresses or endpoints.
+	
+	Service registry -:::- When a microservice starts, it registers itself with the Eureka Server, providing details like its name, host, port, and other metadata. This process is known
+	as "service registration."
+	
+	Service discovery -:::-  In a microservices architecture, services often need to find and communicate with each other. Eureka Server acts as a centralized registry where microservices 
+	can register themselves and discover other services by querying the registry. This enables dynamic service discovery, which is crucial in a distributed system where services might 
+	scale, move, or change addresses frequently.
+	
+	Hearbeat Mechanisam -:::- To maintain an accurate registry, microservices send periodic "heartbeats" to the Eureka Server, indicating they are still active. If a service fails to send 
+	heartbeats for a certain period, it is considered unavailable, and the Eureka Server removes it from the registry.
+	
+	Client-Side Load Balancing -:::- Eureka works in conjunction with client-side load balancing libraries like Ribbon (part of Spring Cloud Netflix). Clients can query the Eureka Server 
+	to get a list of available instances of a service and then use client-side load balancing to distribute requests among them.
+	
+	High Availability and Redundancy -:::- Eureka Server can be deployed in a high-availability mode with multiple server instances. This ensures that if one Eureka Server fails, other 
+	instances can take over, providing redundancy and resilience.
+	
+	Note:
+	======
+	1) Default port of eureka server is 8761.
+	2) We need to provide one "@EnableEurekaServer" annotatio on top of main() class in eurekha service 
+	
+	
+	What is fault tolerance...?
+	============================
+	--- Fault toleranceis the property that enbables a microservice-based system to continue operating even when some components fail or experience issues.
+	--- By using Circuit Breaker pattern we can acheive Faulty tolerance:
+	Circuit Breaker -:::- A pattern used to prevent cascading failures in a microservices architecture. When a service experiences issues, the circuit breaker opens to stop sending 
+	traffic to it until it's stable again. Hystrix and Resilience4j are common implementations.
+	--- It helps manage the risk of system-wide failures by "breaking" connections to a faulty service, allowing the system to degrade gracefully instead of crashing entirely. 
+	Here's how it works :
+	======================
+	1) Closed State -:::- In this default state, requests are allowed to pass through the circuit breaker to the dependent service. If these requests fail beyond a certain 
+	threshold (e.g., due to timeouts or errors), the circuit breaker switches to an "open" state.
+	2) Open State -:::- In this state, the circuit breaker stops all requests to the faulty service. This allows time for the service to recover and prevents overwhelming it with 
+	more requests. During this period, the circuit breaker can return a default response or re-route to a fallback service.
+	3) Half-Open State -:::- After a designated period in the open state, the circuit breaker allows a limited number of requests to pass through to test if the dependent service 
+	has recovered. If the test requests are successful, the circuit breaker transitions back to the closed state. If they fail, it reverts to the open state.
+	
+	There are some libraries to handle fault tolerance:
+	====================================================
+	1) Hystrix:
+	============
+	--- Hystrix, developed by Netflix, is a fault-tolerance library designed for building resilient distributed systems. It offers circuit breaker functionality to handle service failures 
+	and ensure system stability. However, Netflix announced that Hystrix is no longer actively maintained as of November 2018, encouraging users to migrate to Resilience4J 
+	or similar solutions.
+	Key Features:
+	=============
+	a) Circuit Breaker -:::- Protects against cascading failures by opening the circuit when a specified failure rate is reached.
+	b) Fallback Mechanisms -:::- Provides default behavior when the circuit is open or a request fails.
+	c) Bulkhead Pattern  -:::- Limits concurrent requests to isolate failures.
+	d) Latency and Error Metrics  -:::- Monitors and reports latency and error rates.
+	
+	2) Resilience4J:
+	==========
+	--- Resilience4J is a modern fault-tolerance library that offers circuit breaker functionality along with other resilience patterns. It's a lightweight and modular alternative to 
+	Hystrix, designed with functional programming in mind.
+	Key Features:
+	=========
+	a) Circuit Breaker -:::- Similar to Hystrix, but with more configuration options.
+	b) Time Limiter -:::- Limits execution time to avoid prolonged requests.
+	c) Bulkhead Pattern -:::- Restricts the number of concurrent requests.
+	d) Rate Limiter -:::- Controls the rate of requests to prevent overload.
+	e) Retry Mechanism -:::- Attempts failed operations a specified number of times.
+	f) Event-Based Metrics -:::- Provides events for monitoring and metrics.
+	
+	
+	API Gateway:
+	=========
+	--- An API Gateway is a server between a client and microservices that acts as a centralized entry point for all client requests into the distributed architecture.
+	--- It is a reverse proxy that accepts client API calls and forwards them to the appropriate microservice. It plays a key role in directing traffic among different 
+	microservices, as well as distributing the workload across multiple instances of a microservice.
+	--- It handles varies functions like Routing, Security, Rate Limit, Load Balancing, Request Aggregation, Monitoring and Logging.
+	Routing -:::- The API Gateway determines which microservice should handle an incoming client request and routes it accordingly. This simplifies client communication, 
+	as they only need to interact with a single endpoint.
+	Security -:::- Security means Authentication and Authorization. The API Gateway can enforce security policies, check authentication tokens, and ensure clients are authorized 
+	to access specific resources.
+	Rate Limit -:::- API rate limit refers to the number of calls the client (API consumer) is able to make in a second. Rate limits are calculated in requests per second, or RPS.
+	Load Balancing -:::- It aims to distribute incoming network traffic across multiple instances of a service to ensure no single instance is overwhelmed with too much traffic.
+	Request Aggregation -:::- When a client request requires data from multiple microservices, the API Gateway can combine responses into a single result, reducing the number 
+	of client-side requests and improving performance.
+	Monitoring and Logging -:::- The API Gateway can log requests and provide metrics for monitoring, allowing for better observability and troubleshooting in a microservices environment.
+	
+	Why Spring Cloud API Gate instead of Netflix API Gateway(Zuul):
+	=========================================
+	In Real world you will see most of the projects using Netflix API Gateway(Zuul). But many developers and organizations are moving from Zuul to Spring Cloud Gateway 
+	for several reasons.
+	1) Netflix announced that Zuul 1 is no longer under active development, which has pushed users to look for alternatives. Spring Cloud Gateway, on the other hand, has ongoing 
+	development and support.
+	2) Zuul is a blocking Api. A blocking gateway api makes use of as many threads as the no:of requests. If no threads are available  to process incoming request then request 
+	has to wait in queue untill threads free.
+	3) Spring Cloud Api is non-blocking Api. A thread is always available to process the incomming request. These requests are then processed Asynchronously in the background and
+	once completes the response is returned.
+	
+	Note:
+	====
+	1) If you want API Gateway in your project you need to you two dependency in pom.xml.
+	--- a) "spring-cloud-starter-gateway" -:::- Which provides all gateway features.
+	--- b) "spring-cloud-starter-netflix-eureka-client" -:::- This dependency is used to register as instance inside eureka server.
+	2) If you want to route b/w client and microservices you need to do two things:
+	--- a) Add this "spring.cloud.gateway.discovery.locator.enabled=true" in applicatio.properties file so API Gateway can discover the respective service from Eureka server.
+	--- b) In request you need to use only API Gateway service port and respective service Instance name which is maintained by eureka server for routing. Like:
+	Ex:- (http://localhost:8083/CITIZEN-SERVICE/citizen/id/1)---> Here "CITIZEN-SERVICE" is a Instance name and "8083" is port number of API Gateway.
+	Ex:- (http://localhost:8083/VACCINATION-CENTER/vaccinationCenter/id/1) Here "VACCINATION-CENTER" is a Instance name and "8083" is port number of API Gateway.
+	
+	
+	Load Balancing:
+	===========
+	--- Load balancing is used for distributing incoming network traffic among multiple instances of a microservice or across different microservices to ensure optimal resource 
+	utilization, improve performance, and maintain high availability.
+	---  Load balancing helps prevent overloading a single service or instance and provides a scalable architecture that can handle increased demand and failure scenarios.
+	
+	Key Functions of Load Balancing:
+	=====================
+	a) Traffic Distribution -:::- Load balancers distribute incoming requests among multiple service instances based on defined algorithms. This ensures even workload distribution 
+	and reduces the risk of bottlenecks.
+	b) Scalability -:::- By distributing traffic, load balancing enables horizontal scaling, allowing new service instances to be added or removed without impacting the overall system.
+	c) Fault Tolerance  -:::- Load balancers can detect unhealthy instances and redirect traffic to healthy ones, ensuring service availability and resilience.
+	
+	Types of scalling:
+	===========
+	a) Horizontal scaling -:::- This involves adding more microservice instances to handle the increased load. It’s the most common type of scaling for microservices. 
+	You can add new containers or virtual machines to distribute the load across multiple instances.
+	b) Vertical scaling -:::- This involves increasing the resources (CPU, memory, etc.) of an existing microservice instance to handle additional load. While it can provide a 
+	short-term performance boost, it has limits. In the long term, it’s more cost-effective to use horizontal scaling.
+	
+	Types of Load Balancers:
+	================
+	a) Hardware Load Balancers -:::- Physical devices designed to handle load balancing at a high performance. Typically used in enterprise environments with large-scale traffic.
+	b) Software Load Balancers -:::- Software-based solutions running on standard servers. Popular examples include NGINX, HAProxy, and Traefik.
+	c) Cloud-Based Load Balancers -:::- Load balancing services offered by cloud providers, such as AWS Elastic Load Balancing, Azure Load Balancer, and Google Cloud Load Balancing.
+	
+	Load Balancing Algorithms:
+	==================
+	--- Different load balancing algorithms can be used to determine how traffic is distributed among microservice instances:
+	a) Round-robbin Scheduling -:::- Requests are distributed evenly in a cyclic manner among the available instances.  The algorithm instructs the load balancer to go back to the 
+	top of the list and repeats again.( suppose we have 3 instances. instance1 is capable of handling 100 requests/sec, instance2 is capable of handling 50 requests/sec, 
+	instance3 is capable of handling 50 requests/sec. Here round-robbin distributes equally, but instance1 is capable of handle more than remaining two instances. we are not 
+	utilizing the instance1 resource properly here).
+	b) Weighted Round-robbin -:::- Instances are given different weights, with traffic distributed proportionally based on these weights.
+	c) Least Connections -:::- Traffic is sent to the instance with the fewest active connections.
+	
+	Load Balancing in Microservices:
+	=====================
+	--- In a microservices context, load balancing plays a vital role in ensuring efficient and resilient communication between services:
+	a) Client-Side Load Balancing -:::- The client determines which service instance to communicate with. This approach requires a service registry or service discovery mechanism 
+	to track available instances. Tools like Ribbon (deprecated) and Spring Cloud LoadBalancer support client-side load balancing.
+	b) Server-Side Load Balancing -:::- A central load balancer determines where to route traffic. This approach can involve reverse proxies, hardware load balancers, or cloud-based 
+	load balancers. It provides centralized control but can also be a single point of failure if not properly managed.
+	
+	Note:
+	====
+	1) You can keep load balancer b/w client and API Gateway instances(multiple).
+	2) You can keep load balancer b/w API Gateway and Microservice instances(multiple).
+	3) You can keep load balancer b/w Microservice1 and Microservice2 instances(multiple).
+	4) If a servivce process a few hundread or a few thousand requests per second then load balancer is not neccessary.
+	5) The backup Load Balancer can take over in the event of the primary Load Balancer.But manual re-routing can also be done in an emergency if the 2nd L.B also fails.
+	
+	
+	Ways to Communicate b/w Microservices:
+	===========================
+	--- Communication between microservices is a fundamental aspect of microservices architecture. It allows distinct services to interact, coordinate, and work together to 
+	deliver complex applications. There are various approaches to inter-service communication, each with its advantages, disadvantages, and best use cases.
+	There are two ways to communicate b/w microservices:
+	1) Synchronous Communication
+	2) Asynchronous Communication
+	
+	1) Synchronous Communication:
+	=====================
+	--- Synchronous communication involves direct interaction between microservices, where a request is sent from one service to another, and the sender waits for a response. 
+	This approach is similar to traditional client-server communication. This approach is similar to traditional client-server communication.
+	--- Creating a tight coupling between the microservices in terms of timing.
+	--- We can make Synchronous communication through:(
+	a) REST/HTTP(RestTemplate):
+	b) FeignClient using Eureka discovery
+	
+	b) FeignClient using Eureka discovery:
+	=========================
+	--- Feign allows developers to define HTTP client interfaces using annotations, creating a declarative style of communication. This makes it easier to call remote microservices 
+	and reduces boilerplate code.
+	--- We should create one interface contains other services HTTP methods. we can declare this interface with @FeignClient.
+	--- We need to use another Annotation called @EnableFeignClient.
+	
+	2) Asynchronous Communication:
+	======================
+	--- In Asynchronous communication, To Initiate such type of communication, a microservice who wants to send some data to another Microservice publish a message to a seperate 
+	component know as message broker.
+	--- After the message is received by the broker, it's now it's job to pass the message to target service. if the target service is down at the moment, the broker might be configured
+	to retry as long as necessary for successful delivery.
+	--- Since the message broker is responsible for delivering the message, it's no longer necessary for both the services to be UP for successful communication. Thus async messaging 
+	mitigates the biggest problem of synchronous communication -coupling
+	
+	What if message broker is down...?
+	===================================
+	--- A Message broker is a vital part of asynchronous architecture and hence must be fault tolerant.
+	--- This can be achieved by setting up additional standby replicas that can do failover.
+	
+	Types of Asynchronous communication:
+	==========================
+	--- Commonly there are two options in message-based communication:
+	a) Point To Point
+	b) Publisher - Subcriber
+	
+	a) Point To Point:
+	============
+	--- A Queue will used for this type of message-based communication.
+	--- The service that produces the message, which is called producer(sender), will send the message to a queue in one message broker and the service that interest in that message 
+	which is called consumer(receiver), will consumes the message from that queue and carryout further processes for that message.
+	--- If the receiver is DOWN, the message will remains persistent in that queue untill receiver is UP.
+	--- One message send  by a producer can be consumed by only one receiver and the message will be deleted from queue after consumed.
+	--- For this reason, Message-based communication is the one of the best choice to make our microservice resilient.
+	--- Popular choice for queueing system is RabbitMQ, ActiveMQ.
+	
+	b) Publisher - Subcriber:
+	================
+	--- In publisher-subcriber message-based communication, the topics in the message broker is used to store the message sent by the publisher and then subscribers subcribe to 
+	that topic will consume that message.
+	--- Unlike point to point, the message will be ready to consume for all the subscribers and the the topic can have one or more subscribers. The message remains persistent in a 
+	topic untill we delete it.
+	--- In message based communication, the service that consumes messages, either from queue or topic, must know the common message structure that is published by producer
+	or publisher.
+	--- Examples are Kafka, Amazon SNS etc..,
+	
+	
+	
+	

@@ -1,0 +1,354 @@
+Link to watch this concepts in youtube/google.
+===============================================
+1. https://www.youtube.com/playlist?list=PLT9miexWCpPUoMztUQSvkPGR6SYSnqK4Z
+2. Cursors doc(https://www.sitepoint.com/cursors-mysql-stored-procedures/)
+
+
+Stored Procedure:
+==================
+    1. A stored procedure in SQL is a group of SQL queries that can be saved and reused multiple times. It is very useful as it reduces the need for rewriting SQL queries. 
+       It enhances efficiency, reusability, and security in database management. Users can also pass parameters to stored procedures so that the stored procedure can act on the passed parameter values.
+    2. You can also pass parameters to a stored procedure, so that the stored procedure can act based on the parameter value(s) that is passed.
+    3. Stored Procedures are created to perform one or more DML operations on the Database. It is nothing but a group of SQL statements that accepts some input in the form of parameters, 
+       performs some task, and may or may not return a value.
+
+    Syntax-1:
+    ==========
+        DELIMITER //
+        CREATE PROCEDURE ProcedureName (IN/OUT parameter1 DataType, IN/OUT parameter2 DataType, ...)
+        BEGIN
+           — SQL statements to be executed
+        END // 
+        DELIMITER ;
+
+    1. DELIMITER: 
+    ==============
+        a. This allows MySQL to correctly interpret the stored procedure as a single block, even though it contains multiple SQL statements.
+        b. However, when writing stored procedures, triggers, or other complex SQL scripts, the procedure itself may contain multiple SQL statements that also end with semicolons. 
+           In these cases, you need to temporarily change the delimiter to something else (commonly // or $$) to avoid prematurely ending the procedure definition.
+
+    2. IN/OUT/INOUT:
+    =================
+        i) IN:
+        =======
+            This is the default mode. When you define a IN parameter in stored procedure, the calling program has to pass an argument to the stored procedure. In addition, the value of 
+            In parameter is protected. It means that even the value of the IN parameter is changed inside the stored procedure, it's original value is retained after the stored procedure ends. 
+            In other words stored procedure only works on copy of the IN parameter.
+            
+            Ex1:
+            =====
+                CREATE DEFINER=`root`@`localhost` PROCEDURE `employee_proc`(IN salary INT, OUT count INT)
+                BEGIN
+                    select count(*) from employee where emp_salary = salary group by emp_salary;
+                END
+                ------------------------------------------------------------------------------------------
+                exec --> call employee_proc(20000, @count);
+
+        ii) OUT:
+        =========
+            The value of OUT parameter can be changed inside the stored procedure and it's new value is passed back to the calling program. Notice that stored procedure can't access the 
+            initial value of the OUT parameter when it starts.
+            
+            Ex1:
+            =====
+                CREATE DEFINER=`root`@`localhost` PROCEDURE `employee_proc`(OUT total_count INT)
+                BEGIN
+                    select count(*) INTO total_count from employee;
+                END
+                ------------------------------------------------------------------------------------
+                exec --> call employee_proc(@total_count);
+                exec --> select @total_count as total_users_count;
+            
+        iii) INOUT:
+        ============
+            a. The same parameter acts as IN and OUT.
+            
+            Ex1:
+            =====
+                CREATE DEFINER=`root`@`localhost` PROCEDURE `employee_proc`(INOUT give_id_get_salary INT)
+                BEGIN
+	               DECLARE add_extra INT default 999;
+	               select emp_salary INTO give_id_get_salary from employee where emp_id = give_id_get_salary;
+                    SET give_id_get_salary = give_id_get_salary + add_extra;
+                END
+                -------------------------------------------------------------------------------------------------
+                exec --> SET @give_id_get_salary = 104;
+                exec --> call employee_proc(@give_id_get_salary);
+                exec --> select @give_id_get_salary as salary;
+         
+        Ex:
+        ====
+            CREATE DEFINER=`root`@`localhost` PROCEDURE `employee_proc`(IN offset_value INT, OUT second_highest_salary INT, OUT avg_salary INT, OUT sum_of_salary INT)
+            BEGIN
+                select emp_salary into second_highest_salary from employee order by emp_salary desc limit 1 offset offset_value;
+                select avg(emp_salary) into avg_salary from employee;
+                select sum(emp_salary) into sum_of_salary from employee;
+            END
+            ------------------------------------------------------------------------------------------------------
+            exec --> call employee_proc(2, @second_highest_salary, @avg_salary, @sum_of_salary);
+            exec --> select @second_highest_salary, @avg_salary, @sum_of_salary;
+
+    Syntax-2: 
+    ==========
+        To call any stored proc, below is the syntax.
+        --> CALL ProcedureName(parameter1_value, parameter2_value,...);
+        
+        Note:
+        ======
+        a. The below query fetch all the stored proc in specific db.
+           --> SHOW PROCEDURE STATUS WHERE db = 'user';  
+        b. The below query drop the proc from database server.
+           --> DROP PROCEDURE IF EXISTS proc_name;
+
+    Syntax-3:
+    ==========
+        a. To declare any local variable inside stored proc, below is the syntax.
+        b. Default value is optional while declaring a local variable.
+        --> DECLARE variableName dataType  DEFAULT defaultValue;
+
+
+Conditional statements:
+========================
+    Syntax:
+    ========
+        IF condition THEN 
+            // statements 
+        ELSEIF condition THEN 
+            // statements
+        ELSE 
+            // statements 
+        END IF ;
+        
+    Ex:
+    ====
+        CREATE DEFINER=`root`@`localhost` PROCEDURE `employee_proc`(IN employee_id INT, OUT emp_level VARCHAR(20))
+        BEGIN
+            DECLARE employee_salary INT;
+            select emp_salary INTO employee_salary from employee where emp_id = employee_id;
+            -- conditional statements
+            IF employee_salary >= 10000 AND employee_salary <= 29999 THEN
+		    SET emp_level = "Fresher";
+            ELSEIF employee_salary >= 30000 AND employee_salary <= 39999 THEN 
+		    SET emp_level = "Engineer";
+            ELSE 
+		    SET emp_level = "Senior Engineer";
+            END IF ;
+        END
+        ---------------------------------------------------------------------------------------------------------------
+        exec --> call employee_proc(108, @emp_level);
+        exec --> select @emp_level;
+        
+        
+        
+Loops:
+=======
+    1. While Loop:
+    ===============
+        Repeats the block of code untill condition true.
+        
+        Syntax:
+        ========
+            WHILE expression/condition DO 
+                // statements 
+            END WHILE ;
+        
+        Ex:
+        ====
+            CREATE DEFINER=`root`@`localhost` PROCEDURE `employee_proc`(IN n INT, OUT final_sum INT)
+            BEGIN
+	           DECLARE sum INT DEFAULT 0;
+                DECLARE X INT DEFAULT 1;
+                WHILE X <= n DO 
+		        SET sum = sum + X;
+		        SET X = X + 1;
+                END WHILE;
+                SET final_sum = sum;
+            END
+            ------------------------------------------------------------------------------------------
+            exec --> call employee_proc(10, @final_sum);
+            exec --> select @final_sum as sum_of_natural_numbers;
+
+            
+          
+    2. REPEAT Loop:
+    ================
+        Syntax:
+        ========
+            REPEAT
+                // statements
+                UNTIL expression/condition
+            END REPEAT ;
+        
+        Ex:
+        ====
+            CREATE DEFINER=`root`@`localhost` PROCEDURE `employee_proc`(IN n INT, OUT final_sum INT)
+            BEGIN
+                DECLARE sum INT DEFAULT 0;
+                DECLARE X INT DEFAULT 1;
+                REPEAT 
+		        SET sum = sum + X;
+		        SET X = X + 1;
+                   UNTIL X > n
+	           END REPEAT;
+                SET final_sum = sum;
+            END
+            ---------------------------------------------------------------------------------------------
+            exec --> call employee_proc(10, @final_sum);
+            exec --> select @final_sum as sum_of_natural_numbers;
+            
+            
+    3. LOOP:
+    =========
+        Inside the LOOP of proc there are two things;
+            1. ITERATE --> Continues the loop but escapes at some condition.
+            2. LEAVE --> Terminate the running loop.
+            
+        Syntax:
+        ========
+            Loop_Label: LOOP
+                // condition
+                // statement
+            END LOOP ;
+            
+        Ex:
+        ====
+            CREATE DEFINER=`root`@`localhost` PROCEDURE `employee_proc`(IN n INT, OUT final_sum INT)
+            BEGIN
+                DECLARE sum INT DEFAULT 0;
+                DECLARE X INT DEFAULT 1;
+                read_loop: LOOP 
+		         IF X > n THEN 
+			        LEAVE read_loop;
+		         END IF;
+                    SET sum = sum + X;
+                    SET X = X + 1;
+	           END LOOP;
+                SET final_sum = sum;
+            END
+            
+        Ex2:
+        =====
+            CREATE DEFINER=`root`@`localhost` PROCEDURE `employee_proc`(IN n INT, OUT final_sum INT)
+            BEGIN
+                DECLARE sum INT DEFAULT 0;
+                DECLARE X INT DEFAULT 1;
+                read_loop: LOOP 
+                    IF X > n THEN 
+			        LEAVE read_loop;
+                    END IF;
+                    IF ( X mod 2 ) THEN  // (X mod 2) is simply as (X mod 2 ==1)
+			        SET X = X + 1;
+                        ITERATE read_loop; // it is same as continue statement in C-lang
+                    ELSE 
+			        SET sum = sum + X;
+                    END IF;
+                    SET X = X + 1;
+                END LOOP;
+                SET final_sum = sum;
+            END
+            
+            
+Cursors: Cursors reference doc(https://www.sitepoint.com/cursors-mysql-stored-procedures/)
+=========    
+    a. A cursor in MySQL stored procedures is a database object used to retrieve, manipulate, and iterate through a result set row by row. Cursors are useful when you need to process query results 
+       one row at a time within a stored procedure.
+    b. It contains only four commands that are related to cursor declaration, opening, and fetching, closing.
+        1) Declaration: Declare a cursor with a SELECT statement that defines the result set.
+        2) Opening: Open the cursor to establish the result set.
+        3) Fetching: Fetch each row from the cursor into variables.
+        4) Closing: Close the cursor to release the resources.
+    c. When to Use Cursors:
+        1) Cursors are typically used when:
+        2) You need to perform complex operations on each row of a query result.
+        3) You need to execute a loop where each iteration depends on the data from the previous one.
+        4) Bulk processing is required that can't be efficiently handled by a single SQL statement.
+    d. Cursors have these properties:
+        1) Asensitive: The server may or may not make a copy of its result table
+        2) Read only: Not updatable
+        3) Nonscrollable: Can be traversed only in one direction and cannot skip rows
+        4) Cursor declarations must appear before handler declarations and after variable and condition declarations.
+    
+    Syntax:
+    ========
+        DECLARE cursor_name CURSOR FOR SELECT_statement;
+        DECLARE CONTINUE HANDLER FOR NOT FOUND termination_statement;
+        OPEN cursor_name;
+        FETCH cursor_name INTO variables;
+        CLOSE cursor_name;
+        
+    Ex1:
+    =====
+        CREATE DEFINER=`root`@`localhost` PROCEDURE `employee_proc`()
+        BEGIN
+            -- Declare variables to hold cursor data
+            DECLARE done INT DEFAULT FALSE;
+            DECLARE employee_id INT;
+            DECLARE employee_name VARCHAR(15) DEFAULT " ";
+            DECLARE employee_list VARCHAR(500) DEFAULT " ";
+    
+            -- Declare a cursor to select data
+            DECLARE employee_data CURSOR for select emp_id, emp_name from employee;
+    
+            -- Declare a handler to exit the loop
+            DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+    
+            -- Open the cursor
+            OPEN employee_data;
+    
+                -- Loop to fetch data from the cursor
+                read_loop: LOOP 
+			    FETCH employee_data INTO employee_id, employee_name;
+            
+                    -- Exit loop when no more rows to fetch
+                    IF done THEN 
+                        LEAVE read_loop;
+			    END IF;
+			    
+			    -- Perform some operation with the fetched data
+                    -- For example, printing the employee data (useful for debugging)
+                    SET employee_list = concat(employee_list, employee_id, ":", employee_name,", ");
+            
+                END LOOP read_loop;
+                
+                SELECT employee_list;
+                
+            -- Close the cursor    
+            CLOSE employee_data;
+        END        
+        
+        
+    Ex2:
+    =====
+    
+    
+    watching #17 tutorial
+    
+    
+            
+    
+    
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

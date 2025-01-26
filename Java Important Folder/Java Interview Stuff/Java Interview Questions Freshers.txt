@@ -1,0 +1,692 @@
+=========================
+ |    Java Interview Questions 2-5Y  :     |
+=========================
+
+1.) Why String is immutable in Java...?
+Ans.
+    1.) Strings are immutable in java for several reasons:
+    2.) String is widely used data structure so by making string immutable we can acheive several features.
+	
+    1. Security :
+	=======
+    --- Security is most considered thing while dealing user's data like password, username, mobile number etc...
+	---  By making strings immutable, Java ensures that once a string is created, its value cannot be changed, thus enhancing security.
+	
+	2. Synchornization :
+	============
+	--- Immutable objects are inherently thread-safe because their state cannot be modified after creation.
+	--- If strings were mutable, concurrent access to the same string object could lead to unpredictable behavior or data corruption.
+	
+	3. Caching :
+	=======
+	--- The string cache helps re-use string objects and therefore save memory.
+	--- If you create a String using literal way it will store in SCP and if  you create another String literal with same value instead of creating with new reference it will reuse the previously 
+	created String reference. 
+	--- It will reduce the memory usage and improves performance as well.
+	
+	4. Hashcode Caching :
+	=============
+	--- Strings are widely used as keys in hash-based data structures like HashMap.
+	---  The hashCode() method is overridden in String class to facilitate caching, such that the hash is calculated and cached during the first hashCode() call and the same value is returned 
+	ever since.
+    --- This, improves the performance of collections that uses hash implementations when operated with String objects.
+	
+
+2.) Difference between String and StringBuffer in Java....?
+Ans.
+ String :
+ =====
+    a.) String is immutable 
+	b.) We can create string object in two ways(using new keyword, or literal way).
+    b.) The string is slow and consumes more memory when there is to many concatination operation.
+	c.) The string class overrides Object class equal() and hashCode().
+	d.) It uses both Heap area and SCP(String contant pool).
+	
+ StringBuffer:
+ ========
+	a.) StringBuffer is mutable.
+	b.) We can create StringBuffer object only using new keyword.
+    b.) The StringBuffer is fast and consumes less memory when there is to many concatination operation.
+	c.) The StringBuffer class doesn't overrides Object class equal() and hashCode() .
+	d.) It uses only Heap area.
+
+
+3.) Can we ovverride Static method in Java...?
+Ans.
+    --- No, it is not possible to override static methods in Java.
+    1.)When you define a static method in a class, it belongs to the class itself rather than to any specific instance of the class. Static methods are invoked using the class name, 
+	not through instances of the class.
+    2.)However, it is possible to define a static method in a subclass with the same signature as a static method in the superclass. This is known as method hiding rather than method overriding.
+	
+	
+4.) Is string thread safe...?
+Ans.
+    1.) Immutable objects are by default thread-safe because their state can not be modified once created. Since String is immutable in Java, it's inherently thread-safe.
+    2.) Read-only or final variables in Java are also thread-safe in Java.
+	
+	
+5.) What is String constant pool in java...?
+Ans.
+    --- The String constant pool, also known as the string pool, is a special area in the Java heap memory where Java stores string literals. It's a pool of unique string objects that Java 
+	maintains to optimize memory usage and improve performance.
+	
+6.) How to prevent your class from being subclassed...?
+Ans.
+---  In Java, you can prevent your class from being subclassed by declaring it as final. Declaring a class as final means that it cannot be subclassed.
+
+
+7.) Which two methods are ovverriden by an Object, intented to be used as a key in HashMap...?
+Ans.
+    When you intend to use an object as a key in a HashMap or any other hash-based collection in Java, it's essential to override two methods from the Object class:
+    1.) hashCode():
+    =========
+	--- It is used to determine the bucket location where the object should be stored.
+	2.) equals():
+	=======
+    --- This method used to checks whether two objects are equal.
+	
+	
+8.) Difference between List and Set in Java...?
+Ans.
+ List :
+ ===
+    1.) A List is an ordered collection of elements where each element has an index.
+    2.) Allows duplicate elements. That is, the same element can appear more than once in the list.
+    3.)  Elements can be accessed by their index, and the order of elements is preserved.
+    4.) Implementations of List interface include ArrayList, LinkedList, and Vector.
+    5.) Commonly used when you need to store a collection of elements in a specific order and need to access elements by their index.
+	
+ Set :
+ === 
+    1.) A Set is a collection of unique elements, meaning it cannot contain duplicate elements.
+    2.) Does not guarantee the order of elements. The order in which elements are stored may vary between different implementations.
+    3.) Ensures that each element appears only once in the set.
+    4.) Implementations of Set interface include HashSet, TreeSet, and LinkedHashSet.
+    5.) Commonly used when you need to store a collection of unique elements and do not care about the order in which they are stored. 
+	
+	
+9.) How do you make a class immutable in java...?
+Ans.
+    1.) MAKE THE CLASS FINAL: Declaring the class as final ensures that no subclasses can extend it and modify its behavior.
+	2.) MAKE ALL FIELDS PRIVATE AND FINAL: By making fields private, you restrict direct access to them from outside the class. By making them final, you ensure that their values 
+	cannot be changed once initialized.
+	3.) DON'T PROVIDE SETTER METHODS: Since the fields are final, you cannot modify their values after initialization. Therefore, you should not provide setter methods that would 
+	allow modification of the object's state.
+	4.) PROVIDE ONLY GETTER METHODS: To allow access to the internal state of the immutable class, provide getter methods for retrieving the values of its fields. Make sure these 
+	methods do not return mutable references to internal objects.
+	Ex:
+	----
+	final class Student {
+
+		private final String name;
+		private final int regNo;
+		private final Map<String, String> metadata;
+
+		public Student(String name, int regNo, Map<String, String> metadata)
+		{
+			this.name = name;
+			this.regNo = regNo;
+			Map<String, String> tempMap = new HashMap<>();
+			for (Map.Entry<String, String> entry : metadata.entrySet()) {
+				tempMap.put(entry.getKey(), entry.getValue());
+			}
+			this.metadata = tempMap;
+		}
+
+		public String getName() { return name; }
+
+		public int getRegNo() { return regNo; }
+
+		public Map<String, String> getMetadata()
+		{
+			Map<String, String> tempMap = new HashMap<>();
+			for (Map.Entry<String, String> entry : this.metadata.entrySet()) {
+				tempMap.put(entry.getKey(), entry.getValue());
+			}
+			return tempMap;
+		}
+	}
+
+	class Immutable {
+		public static void main(String[] args)
+		{
+			Map<String, String> map = new HashMap<>();
+			map.put("1", "first");
+			map.put("2", "second");
+			Student s = new Student("ABC", 101, map);
+			System.out.println(s.getName()+" --- "+s.getRegNo()+" ---- "+s.getMetadata());
+			map.put("3", "third");
+			// Remains unchanged due to deep copy in constructor
+			System.out.println("After modifying: "+s.getMetadata());
+		}
+	}
+	
+	
+10.) Difference b/w Hashtable and HashMap...?
+Ans.
+ Hashtable:
+ =======
+    1.) Hashtable is a legacy class that has been around since the early versions of Java. 
+	2.) Hashtable is synchronized.It is thread-safe for concurrent use.
+	3.) Hashtable Does not allow null keys or values. Attempting to insert null key or value will result in a NullPointerException.
+	4.) Hashtable may be slower in single-threaded scenarios compared to HashMap.
+	5.)  Hashtable provides an enumeration in addition to iterators for traversing its elements.Iterators of Hashtable is fail-fast (ConcurrentModificationException).
+	
+ HashMap:
+ =======
+    1.) HashMap is a newer implementation introduced later. It offers similar functionality to Hashtable but with better performance and additional features.
+	2.) HashMap is not synchronized by default. It is not thread-safe for concurrent use.
+	3.) Allows one null key and any number of null values. It's not restricted by null keys or values.
+	4.) HashMap can be faster in single-threaded scenarios compared to Hashtable.
+	5.) It only provides iterators for traversing its elements.Iterator of HashMap is fail-fast (ConcurrentModificationException).
+	
+	
+11.) How will you iterate over map...?
+Ans.
+    --- To iterate over a map in Java, you can use either an enhanced for loop, iterators, or Java 8's Stream API. Here are examples of each approach:
+	Map<String, Integer> map = new HashMap<>();
+	map.put("One", 1);
+	map.put("Two", 2);
+	map.put("Three", 3);
+	Ex1:
+	-----
+	for (Map.Entry<String, Integer> entry : map.entrySet()) {
+		System.out.println(entry.getKey() + " ----- " + entry.getValue());
+    }
+	Ex2:
+	-----
+	Iterator<Map.Entry<String, Integer>> iterator = map.entrySet().iterator();
+	while (iterator.hasNext()) {
+		Map.Entry<String, Integer> entry = iterator.next();
+		System.out.println(entry.getKey()+"-----"+entry.getValue());
+	}
+	Ex3:
+	-----
+	map.forEach((key, value) -> {
+		System.out.println(key + "-----" + value);
+	});
+	
+	
+12.) Difference b/w ArrayList and LinkedList...?
+Ans.
+ ArrayList:
+ ======
+    1.) Underlying Data Structure is Array.
+    2.) Insertion and deletion operation is slow compared to LinkedList.
+    3.) Retrieving the data is very fast 	because it implements RandomAccess Interface.
+	4.) It Stores the Objects in continous memory location.
+	5.) It is memory efficient because only stores elements in the list.
+	
+ LinkedList:
+ =======
+    1.) Underlying Data Structure is Doubly Linked List.
+    2.) Insertion and deletion operation is fast compared to LinkedList.
+    3.) Retrieving the data is very slow because it doesn't implements RandomAccess Interface.
+	4.) It doesn't Stores the Objects in continous memory location.
+	5.) It is not memory efficient because  it stores the element and the pointers to next and previous nodes.
+	
+	
+13.) Difference b/w Checked and Unchecked exception...?
+Ans.
+ Checked:
+ ======
+    1.) The compiler checks for these exceptions and forces the programmer to either handle them within the method (using a try-catch block) or declare them using 
+	the throws keyword in the method signature.
+	2.) Failure to handle or declare checked exceptions results in a compilation error.
+	3.) Exception (Except RuntimeExceptions and it's subclasses) are known as Checked exception(IO Exception, Interrupted Exception, SQLException, ClassNotFoundException).
+	
+ Unchecked:
+ =======
+	1.) Unchecked exceptions are exceptions that do not require explicit handling or declaration. This exceptions raised at Runtime only.
+	2.) They usually represent programming errors or unexpected conditions that are beyond the control of the application.
+	3.) Unchecked exceptions are RuntimeException and it's subclasses and Error and it's subclasses class.
+	4.) Some of these exceptions are NullPointerException, ArrayIndexOutOfBoundsException, and ClassCastException.
+	
+	
+14.) How to convert array to list...?
+Ans.
+    --- In Java, you can convert an array to a list using the Arrays.asList() method or by iterating over the array and adding elements to a list manually.
+	Ex1:
+	-----
+	String[] array = {"apple", "banana", "orange"};
+	List<String> list = Arrays.asList(array);
+	System.out.println("List: " + list);
+	Ex2:
+	-----
+	String[] array = {"apple", "banana", "orange"};
+	List<String> list = new ArrayList<>();
+    for (String element : array) {
+		list.add(element);
+	}
+	System.out.println("List: " + list);
+	
+	
+15.) Difference b/w Serializable and Externalizable interface in java...?
+Ans.
+ Serialization:
+ ========
+    1.) Serializable is a marker interface, meaning it doesn't contain any methods that need to be implemented.  The JVM takes care of serialization using default mechanisms. 
+	2.) You have limited control over the process. 
+	3.) Default serialization can be slower due to reflection and handling of all object members.
+	4.)  No requirement for a public no-arg constructor. The JVM can use reflection to create the object during deserialization.
+	
+ Externalizable:
+ =========
+    1.) It extends Serializable and defines two methods: writeExternal() and readExternal(). You implement these methods to define custom serialization logic.
+	2.) It gives us full control over how the object is serialized and deserialized.
+	3.) By writing custom logic, you can potentially optimize serialization for better performance, especially for large objects.
+	4.) Requires a public no-arg constructor because the JVM invokes it before calling readExternal().
+	
+	
+16.) Explain Singleton Design Pattern..? Write your class to make singleton design pattern..?
+Ans.
+
+	
+	
+17.) Difference b/w local and instance variable...?
+Ans.
+ Local Variables:
+ ==========
+    1.) Local variables are declared within a method, constructor, or block (such as a loop or conditional statement). They are accessible only within the block in which they are declared.
+	2.) Local variables exist only for the duration of the block in which they are declared. Once the block execution completes, the memory allocated to local variables is released.
+	3.) Local variables must be explicitly initialized before they are used. If not initialized, the compiler generates an error.
+	4.) Local variables cannot have access modifiers like public, private, or protected.
+	
+ Instance Variables:
+ ============
+    1.) Instance variables, also known as member variables or fields, are declared within a class but outside of any method, constructor, or block. They are accessible to all methods and 
+	constructors of the class and can be accessed using an object of the class.
+	2.) Instance variables exist as long as the object to which they belong exists. They are initialized when the object is created and are destroyed when the object is garbage collected.
+	3.) Instance variables can be initialized at the time of declaration or in constructors. If not initialized, they are assigned default values.
+	4.) Instance variables can have access modifiers, allowing control over their accessibility from other classes. Common access modifiers include public, private, protected.
+	
+	
+18.) What is Serialization...?
+Ans.
+    --- Serialization is the process of converting an object into a format that can be easily stored, transmitted, or reconstructed later to its original form.
+	--- In Java, serialization involves converting an object into a stream of bytes that can be written to a file, sent over a network, or stored in a database.
+	--- The serialization process is performed using the ObjectOutputStream class to write the object's state to an output stream.
+	Ex:
+	----
+	MyClass objectToSerialize = new MyClass("John", 25);
+	// Serialize the object to a file
+	try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream("object.ser"))) {
+		outputStream.writeObject(objectToSerialize);
+		System.out.println("Object serialized successfully");
+	} catch (IOException e) {
+		e.printStackTrace();
+	}
+	
+	
+19.) What is Deserialization...?
+Ans.
+    --- Deserialization is the process of reconstructing an object from its serialized form, allowing it to be restored to its original state.
+	--- In Java, deserialization involves reading a stream of bytes from a serialized object and converting it back into an object.
+	--- The deserialization process is performed using the ObjectInputStream class to read the object's state from an input stream.
+	Ex:
+	----
+	try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream("object.ser"))) {
+		// Read the serialized object from the file and cast it to MyClass
+		MyClass deserializedObject = (MyClass) inputStream.readObject();
+		System.out.println("Object deserialized successfully");
+		// Print the deserialized object's state
+		System.out.println("Name: " + deserializedObject.getName());
+		System.out.println("Age: " + deserializedObject.getAge());
+	} catch (IOException | ClassNotFoundException e) {
+		e.printStackTrace();
+	}
+	
+	
+20.) Difference b/w == and .equals() in java...?
+Ans.
+ "==":
+  ===
+    1.) "==" it is an operator and it is always checks for reference comparison only.
+	2.) We can use the "==" operator with objects and primitives.
+	3.) The == operator can’t compare conflicting objects(Conflict means two different type objects like String and StringBuffer), so it raises compile-time error.
+	4.) == operator cannot be overridden.
+
+ .equals():
+ ======
+    1.) It is present in Object class and default nature of this method is used to compare references only. But equal() was overriden for content comparison in some of the classes like String, Wrapper classes, 
+	Collection classes(List, Set, Map) etc..,
+	2.) We cannot use the equals method with primitives.
+	3.) The equals() method can compare conflicting objects utilizing the equals() method and returns “false”.
+	4.) Equals() method and can be overridden.
+	
+	
+21.) Difference between Method ovverriding and Method overloading in java...?
+Ans.
+ Method overriding:
+ ============
+    1.) Method overriding occurs when a subclass provides a specific implementation of a method that is already defined in its superclass.
+	2.) The method signature (name, return type, and parameter list) in the subclass must exactly match the method signature in the superclass.
+	3.) Method overriding is used to achieve runtime polymorphism or dynamic method dispatch, where the appropriate method to execute is determined at runtime 
+	based on the type of the object.
+	4.) The superclass's method is replaced by the subclass's method when called on an instance of the subclass.
+	
+ Method overloading:
+ =============
+    1.) Method overloading occurs when multiple methods within the same class (or in different classes with the same name) have different signatures 
+	(must have different parameter lists, but they may have different return types.).
+	2.) Method overloading is used to provide multiple methods with the same name but different behaviors or functionalities within a class.
+	3.) Overloaded methods are distinguished by the number and types of their parameters, allowing the compiler to determine which method to call based on the arguments passed.
+	4.) Overloading is resolved at compile time and is a static polymorphism or compile-time polymorphism.
+	
+	
+22.) What are types of access specifiers...?
+Ans.
+    --- In Java, access specifiers (also known as access modifiers) are keywords used to control the visibility and accessibility of classes, methods, and variables. 
+	There are four types of access specifiers in Java:
+	1. public:
+	======
+	--- Members (classes, methods, and variables) declared as public can be accessed from anywhere, by any other class.
+	--- There is no restriction on accessibility for public members.
+	
+	2. private:
+	======
+	--- Members declared as private can only be accessed within the same class where they are declared.
+	--- They are not accessible from outside the class, including subclasses.
+	
+	3. protected:
+	========
+	--- Members declared as protected can be accessed within the same class, subclasses (even if they are in different packages), and classes in the same package. 
+	--- They are not accessible from classes outside the package that are not subclasses of the declaring class.
+	
+	4.default:
+	======
+	--- If no access specifier is provided (i.e., no public, private, or protected keyword), the member has default (package-private) access.
+	--- Members with default access can only be accessed within the same package.
+    --- They are not accessible from classes outside the package, even if they are subclasses.
+	
+	
+23.) Explain use of this keyword...?
+Ans.
+    --- The this keyword in Java is used to refer to the current object instance within a method or constructor.
+	
+	
+24.) Explain Exception hierarchy...?
+Ans.
+	--- The exception hierarchy in Java is a fundamental structure that categorizes different types of exceptions that can occur during program execution.
+	1.) Throwable:
+	=========
+	--- The root class of the hierarchy. All exceptions and errors inherit from Throwable.
+	Subclasses:
+	=======
+	a.) Error:
+	======
+	--- Represents serious problems that typically reflect issues with the environment or JVM (Java Virtual Machine) itself. These errors are usually not recoverable 
+	within the application code. (e.g., OutOfMemoryError, StackOverflowError).
+	b.) Exception:
+	========
+	--- Represents recoverable exceptions that can be handled by the application logic. This is the main branch for exceptions you encounter during program execution.
+	(e.g., IOException, RuntimeException, InterruptedException).
+	
+	Further Subclasses of Exception:
+	====================
+	a.) Checked:
+	========
+	--- These exceptions are checked by the compiler. The code that throws a checked exception must either handle it using a try-catch block or declare it using the 
+	throws keyword in the method signature.
+	--- Ex: IOException, InterruptedExceptio.
+	b.) Unchecked:
+	=========
+	--- These exceptions are not checked by the compiler. They typically represent programming errors or unexpected conditions.
+	--- Ex: RuntimeExceptions and Error are unchecked.
+	
+25.) Difference b/w extending Thread class and Runnable interface...?
+Ans.
+    --- In Java, there are two primary ways to create a thread: by extending the Thread class or by implementing the Runnable interface.
+	1.) By Thread class:
+	============
+	--- To create a thread by extending the Thread class, you define a new class that extends Thread and overrides its run() method.
+	--- As Java does not support multiple inheritance. This means that your class cannot extend any other class if it extends Thread.
+	
+    2.) By Runnable Interface:
+	================
+	--- To create a thread by implementing the Runnable interface, you define a class that implements the Runnable interface and provides an implementation for the run() method.
+	--- Implementing Runnable allows for greater flexibility, as your class can implement other interfaces or extend other classes.
+	--- It is the preferred approach in Java for creating threads, especially in larger applications or when multiple inheritance is needed.
+	
+26.) How can we avoid NullPointerException in java...?
+Ans.
+    --- Java 8 introduced the Optional class specifically for handling null references. It provides methods like isPresent(), orElse(), and orElseGet() to deal with null values safely.
+	--- Before accessing any object's methods or properties, always check if the object reference is not null by using "if" conditions.
+	
+27.) Difference b/w Abstraction and Encapsulation...? How you use it in your project..?
+Ans.
+	--- In your project, you can use abstraction and encapsulation to create well-designed, modular, and maintainable code:
+    1.) Abstraction:
+	==========
+	--- Hides the implementation details of an object and exposes only its essential functionalities through an interface or methods with specific functionalities.
+	--- Promotes loose coupling between different parts of your program as they rely on the functionalities provided by the abstraction rather than the specific implementation details.
+	--- Example: If your project involves managing different types of vehicles, you can create an abstract Vehicle class with common methods like start(), stop(), and move().
+	
+	2.) Encapsulation:
+	===========
+	--- Encapsulate the internal state of your objects by making instance variables private and providing public methods to access or modify them.
+	--- Promotes data integrity and security by ensuring data manipulation happens through well-defined methods within the class.
+	--- Example: In a banking application, encapsulate sensitive data such as account balance and account number as private attributes of the Account class, and provide public methods 
+	like deposit(), withdraw(), and getBalance() to interact with the account safely.
+	
+28.) When to use abstract class and interface in java...?
+Ans.
+	--- In Java, both abstract classes and interfaces are used to achieve abstraction, but they serve different purposes and have different characteristics. 
+	1.) abstract class:
+	===========
+	--- Use an abstract class to establish relation between interrelated objects. (Like Thread class can only use with user-defined thread classes)
+	--- Interelated classes typically refer to classes that share common characteristics, behaviors, or functionalities. These classes are often part of a hierarchical relationship, where a 
+	superclass represents a more general concept, and subclasses represent more specialized versions of that concept.
+	--- You can define instance variables, constructors, and non-static methods in abstract classe.
+	--- Multiple Inheritence is not supported when you're dealing with abstract classes.
+	--- Abstract classes are useful when you want to share code among closely related classes and enforce common behavior.
+	
+	2.) interface:
+	========
+	--- Use interface to establish relation between unrelated classes.(For example, classes like String, ArrayList, HashMap, and custom user-defined classes can all implement 
+	Serializable to enable object serialization. But Serializable aren't related to any of these class).
+	---  unrelated classes in the context of interfaces, we are typically talking about classes that do not share a common hierarchical relationship or inheritance hierarchy but need to adhere
+	to a common contract or provide certain capabilities.
+	--- Interfaces can only contain abstract methods and constants (static final variables) and static and default methods as well.
+	--- Unlike abstract classes, interfaces cannot have instance variables or constructors.
+	--- Interfaces are useful for defining common behavior across unrelated classes, enabling loose coupling and supporting multiple inheritance of type.
+	
+29.) Difference b/w Exception and Error...?
+Ans.
+	--- In Java, both exceptions and errors are subclasses of the Throwable class, but they serve different purposes and represent different types of problems:
+	1.) Exception:
+	=========
+	--- Exceptions represent abnormal conditions or unexpected situations that occur during the execution of a program.
+	--- Exceptions are typically caused by faults in the program logic, invalid inputs, or external factors such as file I/O errors or network issues.
+	--- Exceptions are recoverable, meaning that the program can catch and handle them to gracefully recover from the error and continue execution.
+	--- Examples of exceptions include NullPointerException, ArrayIndexOutOfBoundsException, FileNotFoundException, and SQLException.
+	
+	2.) Error:
+	======
+	--- Errors represent serious, unrecoverable problems that typically occur at runtime and are beyond the control of the application.
+	--- Errors are not meant to be caught or handled by application code. Errors are usually caused by problems in the execution environment, such as virtual machine failures, 
+	system resource exhaustion, or critical application dependencies.
+	--- Examples of errors include OutOfMemoryError, StackOverflowError, and LinkageError.
+	
+30.) Difference b/w throw, throws and finally..?
+Ans.
+	--- These three keywords (throw, throws, and finally) are all related to exception handling in Java, but they serve distinct purposes:
+	1.) throw:
+	======
+	--- This keyword is used to explicitly throw an exception object from a block of code.
+	--- You can throw any instance of a class that inherits from Throwable.
+	
+	2.) throws:
+	=======
+	--- This keyword is used in a method signature to declare the exceptions that a method might throw during its execution.
+	--- Informs the calling function about potential exceptions that it needs to handle using try-catch blocks or propagate using throws further up the call stack.
+	
+	3.) finally:
+	======
+	--- This keyword is used with a try-catch block to define a block of code that will always be executed, regardless of whether an exception is thrown or not.
+	--- This block is typically used for critical tasks like closing resources (files, network connections) or releasing locks to prevent resource leaks.
+	
+31.) What is class...?
+Ans.
+	--- In Java, a class is a blueprint or prototype that defines the properties and behaviors of objects. It serves as a template for creating objects that share similar 
+	characteristics and functionalities.
+	
+32.) What is an object...?
+Ans.
+	--- In Java, an object is a specific instance of a class. It represents a real-world entity or concept with its own set of properties and behaviors.
+	
+33.) Difference b/w Class and Object...?
+Ans.
+	1.) Class:
+	======
+	--- Holds the definition of fields and methods.
+	--- Reusable for creating multiple objects.
+	--- No unique identity.
+	
+	2.) Object:
+	=======
+	--- Holds actual data values for those fields and Executes the functionality defined in method.
+	--- Not reusable, each object is unique.
+	--- Has a unique identity in memory.
+	
+34.) What is Method Overloading in java...?
+Ans.
+	--- Method overloading allows you to define multiple methods in a class with the same name, as long as their parameter lists differ.
+	--- The return type of a method can be different for overloaded methods, but it's not a factor in distinguishing overloaded methods. The focus is on the parameter list.
+	--- Overloaded methods are resolved at compile time based on the number and types of arguments used in the method call.
+	
+35.) What is Method Overriding in java...?
+Ans.
+	--- Method overriding in Java refers to the capability of a subclass to provide a specific implementation of a method that is already defined in its superclass. 
+	--- The overriding method in the subclass must have the same method signature (i.e., same name, return type, and parameter list) as the method in the superclass.
+	--- It is also know as dynamic method dispatch. Method Overriding resolves at runtime. 
+	
+36.) What is a thread in java...?
+Ans.
+	--- A thread refers to a single independent unit of execution within a program. Threads are lightweight processes that enable concurrent execution, allowing multiple 
+	tasks to run concurrently within a single program.
+	--- Threads in Java are created and managed using the Thread class or by implementing the Runnable interface.
+	
+37.) File handling in java...?
+Ans.
+	--- File handling in Java refers to the process of reading from and writing to files on the disk. Java provides several classes and APIs for file handling operations, allowing 
+	you to perform tasks such as creating, reading, writing, and manipulating files and directories.
+	1.) java.io.File:
+	==========
+	--- The File class represents a file or directory pathname in the file system.
+	--- It provides methods for querying information about files and directories, such as checking existence, getting file attributes, creating and deleting files or directories, and
+	navigating the file system.
+	Ex:
+	----
+	File file = new File("example.txt");
+	if (file.exists()) {
+		System.out.println("File exists");
+	}
+	
+	2.) File Input and Output Streams:
+	=====================
+	--- Java provides input and output stream classes (FileInputStream, FileOutputStream, FileReader, FileWriter) for reading from and writing to files, respectively.
+	--- Streams provide low-level access to file contents, allowing you to read bytes or characters from a file and write bytes or characters to a file.
+	Ex:
+	----
+	try (FileInputStream fis = new FileInputStream("input.txt");
+    FileOutputStream fos = new FileOutputStream("output.txt")) {
+		int byteRead;
+		while ((byteRead = fis.read()) != -1) {
+			fos.write(byteRead);
+		}
+	} catch (IOException e) {
+		e.printStackTrace();
+	}
+	
+	3.) Buffered Input and Output Streams:
+	========================
+	--- Buffered streams (BufferedReader, BufferedWriter, BufferedInputStream, BufferedOutputStream) provide buffering capabilities, improving I/O performance by reducing 
+	the number of disk reads and writes.
+	--- These classes wrap around existing input and output streams and provide additional buffering functionality.
+	Ex:
+	----
+	try (BufferedReader reader = new BufferedReader(new FileReader("input.txt"));
+    BufferedWriter writer = new BufferedWriter(new FileWriter("output.txt"))) {
+		String line;
+		while ((line = reader.readLine()) != null) {
+			writer.write(line);
+			writer.newLine();
+		}
+	} catch (IOException e) {
+		e.printStackTrace();
+	}
+	
+38.) Purpose of static method and static variable...?
+Ans.
+	1.) Static variables:
+	============
+	--- A static variable (also known as a class variable) is a variable that belongs to the class rather than to instances (objects) of the class.
+	--- Static variables are shared among all instances of the class, meaning that changes made to a static variable by one instance are visible to all other instances.
+	--- Static variables are declared using the static keyword and are typically initialized once when the class is loaded into memory.
+	
+	2.) Static Methods:
+	============
+	--- A static method is a method that belongs to the class rather than to instances of the class.
+	--- Static methods can be called directly on the class itself, without the need to create an instance of the class.
+	--- Static methods cannot access instance variables or invoke instance methods directly, as they are not associated with any particular instance.
+	
+39.) Difference b/w continue and break...?
+Ans.
+	--- In Java, continue and break are both control flow statements used to alter the flow of execution within loops (such as for, while, or do-while).
+	1.) break:
+	========
+	--- The break statement is used to terminate the loop prematurely, causing the program to exit the loop immediately. The loop's execution is terminated, and control is 
+	transferred to the statement immediately following the loop.
+	
+	2.) continue:
+	========
+	--- The continue statement is used to skip the current iteration of the loop and proceed to the next iteration.
+	
+40.) What is final keyword in java...?
+Ans.
+	--- In Java, the final keyword is a modifier that can be applied to variables, methods, and classes. It indicates that the variable, method, or class is immutable or unchangeable, 
+	depending on where it's used.
+	1.) Final variable:
+	===========
+	--- When applied to a variable, the final keyword indicates that the variable's value cannot be changed once it has been initialized.
+	--- Final variables must be initialized either at the time of declaration or within the constructor of the class.
+	--- Attempts to reassign a value to a final variable will result in a compilation error.
+	
+	2.) Final method:
+	===========
+	--- When applied to a method, the final keyword indicates that the method cannot be overridden by subclasses.
+	--- Final methods provide a way to prevent subclasses from modifying or extending the behavior of a method defined in the superclass.
+	
+	3.) Final class:
+	=========
+	--- When applied to a class, the final keyword indicates that the class cannot be subclassed.Final classes cannot have subclasses, preventing inheritance and extension of the class's behavior.
+	
+41.)  What is JIT compiler in java...?
+Ans.
+	--- JIT (Just-In-Time) compiler is a component of the Java Virtual Machine (JVM) that improves the performance of Java programs by dynamically compiling Java 
+	bytecode into native machine code at runtime.The bytecode stored in ".class" file.
+
+42.) What is WORA in java...?
+Ans.
+	--- WORA stands for "Write Once, Run Anywhere". The concept of WORA, which aims to enable developers to write code once and have it run on any 
+	platform without modification. This enabling developers to build robust, scalable, and platform-independent software solutions.
+	
+43.) Purpose of default constructor in java...?
+Ans.
+	--- In Java, a default constructor is a constructor that is automatically generated by the compiler if no constructor is explicitly defined within a class.
+	--- The purpose of the default constructor is to initialize the newly created object with default values and perform any necessary setup operations.
+	--- In inheritance purpose, as subclasses implicitly call the default constructor of the superclass if no other constructor is invoked explicitly.
+	
+44.) What is class loader in java...?
+Ans.
+	--- In Java, a class loader is a crucial component of the Java Runtime Environment (JRE) responsible for dynamically loading Java classes into the Java Virtual Machine (JVM) at runtime.
+	--- Class loaders are responsible for locating and loading Java class files from various sources, such as the file system, network, or other repositories, into the JVM's memory. Classes can be 
+	loaded from JAR files, directories, or even dynamically generated bytecode.
+	
+45.) 
+ 
+ 
+
+
+ 

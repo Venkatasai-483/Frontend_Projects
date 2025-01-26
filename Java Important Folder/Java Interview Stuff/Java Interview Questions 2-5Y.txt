@@ -1,0 +1,405 @@
+1a. What is Singleton in java and how to create it...?
+====================================
+ANS:
+a) Eager Singleton:
+============
+public class EagerSingleton {
+    public static void main(String[] args) {
+        ESingleton eSingleton = ESingleton.getSingletonInstance();
+        ESingleton eSingleton1 = ESingleton.getSingletonInstance();
+        System.out.println(eSingleton.hashCode()+" "+eSingleton1.hashCode());
+    }
+}
+
+class ESingleton{
+    private ESingleton(){}
+
+    private static final ESingleton singletonInstance= new ESingleton();
+    public static ESingleton getSingletonInstance(){
+        return singletonInstance;
+    }
+
+}
+
+b) Lazy Singleton:
+============
+
+public class LazySingleton {
+    public static void main(String[] args) {
+        LSingleton lSingleton = LSingleton.getSingletonInstance();
+        LSingleton lSingleton1 = LSingleton.getSingletonInstance();
+        System.out.println(lSingleton.hashCode()+" "+lSingleton1.hashCode());
+    }
+}
+
+class LSingleton{
+    private static LSingleton singletonInstance=null;
+    private LSingleton(){}
+
+    public static synchronized LSingleton getSingletonInstance(){ // --> synchronized is to abort Race condition
+        if(singletonInstance==null){
+            singletonInstance = new LSingleton();
+        }
+        return singletonInstance;
+    }
+}
+
+c) Double Checking Lazy Singleton:
+=======================
+
+public class DoubleCheckingLazySingleton {
+    public static void main(String[] args) {
+        DCLSingleton dclSingleton = DCLSingleton.getSingletonInstance();
+        DCLSingleton dclSingleton1 = DCLSingleton.getSingletonInstance();
+        System.out.println(dclSingleton.hashCode()+" "+dclSingleton1.hashCode());
+    }
+}
+
+class DCLSingleton{
+    private static DCLSingleton singletonInstance=null;
+    private DCLSingleton(){}
+
+    public static DCLSingleton getSingletonInstance(){ 
+        if(singletonInstance==null){
+            synchronized (DCLSingleton.class){
+                if(singletonInstance==null){
+                    singletonInstance = new DCLSingleton();
+                }
+            }
+        }
+        return singletonInstance;
+    }
+}
+
+1b . How to break singleton pattern...?
+================================================
+ANS:
+a) Using clone():
+===========
+package com.singleton;
+
+public class DoubleCheckingLazySingleton {
+    public static void main(String[] args) throws CloneNotSupportedException {
+        DCLSingleton dclSingleton = DCLSingleton.getSingletonInstance();
+        DCLSingleton dclSingleton1 = (DCLSingleton) dclSingleton.clone();
+        System.out.println(dclSingleton.hashCode()+" "+dclSingleton1.hashCode());
+    }
+}
+
+class DCLSingleton extends MyClone{
+    private static DCLSingleton singletonInstance=null;
+    private DCLSingleton(){}
+
+    public static DCLSingleton getSingletonInstance(){ // --> synchronized is for to abort Race condition
+        if(singletonInstance==null){
+            synchronized (DCLSingleton.class){
+                if(singletonInstance==null){
+                    singletonInstance = new DCLSingleton();
+                }
+            }
+        }
+        return singletonInstance;
+    }
+}
+
+class MyClone implements Cloneable{
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+}
+
+b) 
+
+
+
+2. Write a program to create Immutable class...?
+================================================
+ANS: Youtube channel link(https://www.youtube.com/watch?v=TXV0_JhP8pY)
+
+public class ImmutableClass {
+    public static void main(String[] args) {
+        List<String> hobbies = new ArrayList<>();
+        hobbies.add("cricket");
+        hobbies.add("swimming");
+        System.out.println(hobbies.hashCode());    // 1845072077
+        Student s1 = new Student("sai",107,hobbies);
+        hobbies.add("running");
+        System.out.println(s1.getHobbies());  // ["cricket", "swimming"]
+    }
+}
+
+final class Student{
+    private final String name;
+    private final int rollNo;
+    private final List<String> hobbies;
+
+    public Student(String name, int rollNo, List<String> hobbiesList) {
+        this.name = name;
+        this.rollNo = rollNo;
+        this.hobbies = new ArrayList<>();
+        for(String hobby : hobbiesList){
+            hobbies.add(hobby);
+        }
+    }
+
+    public String getName() {
+        return name;
+    }
+    public int getRollNo() {
+        return rollNo;
+    }
+    public List<String> getHobbies() {
+        System.out.println(hobbies.hashCode());    // 1845072077
+        return hobbies;
+    }
+
+}
+
+3. What is equal() and hashCode() method contract...?
+======================================
+ANS: Youtube link(https://www.youtube.com/watch?v=CpVALR9HeTE&list=PL3hpmQhMoz-dMhvnkTunjOMZSa_f3FH24&index=2)
+	--- The basic rule of the contract states that if two objects are equal to each other based on equals() method, then the hash code must be the same, but if the hash code is the same, 
+	then equals() can return false.
+	What if i haven't follow:
+	================
+	--- It leads to incorrect behavior in HashMap operations, such as retrieval, removal, or replacement of objects, as they may not work as expected when searching for 
+	objects based on equality.
+	
+4. Create Custom checked Exception class in java...?
+========================================
+ANS: 
+--- You should extend Exception class to create Custom Checked exception and also you should handle that checked exception using try/catch (or) throws.
+
+public class CustomCheckedException {
+    public static void main(String[] args) {
+        try{
+            throw new CustomChecked("Handling the custom checked exception");
+        }catch (CustomChecked exception){
+            System.out.println(exception);
+        }
+    }
+}
+
+class CustomChecked extends Exception{
+    CustomChecked(String msg){
+        super(msg);
+    }
+}
+
+5. Create Custom Unchecked Exception class in java...?
+========================================
+ANS: 
+--- You should extend RuntimeException class to create Custom Unchecked exception.
+
+public class CustomCheckedException {
+    public static void main(String[] args) {
+        try{
+            throw new CustomChecked("Handling the custom checked exception");
+        }catch (CustomChecked exception){
+            System.out.println(exception);
+        }
+    }
+}
+
+class CustomChecked extends Exception{
+    CustomChecked(String msg){
+        super(msg);
+    }
+}
+
+6. What is difference between volatile and synchronized...?
+==============================================
+ANS: Youtube link(https://www.youtube.com/watch?v=R9MqDY2SxbA&list=PL3hpmQhMoz-dMhvnkTunjOMZSa_f3FH24&index=6)
+	a) volatile:
+	=======
+	--- If a value of a variable keeps on changing by multiple threads then there may be a chance of a data inconsistency problem(Because it's fetching the value from processor chache).
+	--- Then if a variable is volatile, then processor will always fetch latest value from RAM(main memory) and will not cache it's value in processor-cache.
+	
+	b) synchronized:
+	===========
+	--- If you don't specify synchronized keyword for critical code, the code which executed by multiple threads will leads to data inconsistency.
+	--- when a method or block of code is synchronized, then only one thread will be able to execute the code, other thread will wait untill the executing thread finishes.
+	
+7. How to invoke Ambhiguty methods in Java...?
+===================================
+ANS:
+
+interface Animals{
+    default void sleep(){  -----------> Ambhiguty method1
+        System.out.println("jungle");
+    }
+}
+interface Birds {
+    default void sleep() {  -----------> Ambhiguty method2
+        System.out.println("tree");
+    }
+}
+class Lion implements Birds,Animals{
+    public void sleep(){
+        Animals.super.sleep();
+		// Birds.super.sleep();
+    }
+}
+public class InterfVsAbstract {
+    public static void main(String[] args) {
+        Lion lion = new Lion();
+        lion.sleep(); //jungle
+    }
+}
+
+8. Why static and default methods are introduced in interface...?
+===========================================
+ANS: Youtube link(https://www.youtube.com/watch?v=8TAp5rxQy4s&list=PL3hpmQhMoz-dMhvnkTunjOMZSa_f3FH24&index=8)
+	--- Default methods were introduced to support evolving interfaces without breaking existing implementations. Without default methods, adding a new method to an interface 
+	would require all implementing classes to update with the new method, potentially breaking backward compatibility.
+	--- Static methods in Java interfaces, also introduced in Java 8, allow you to define utility methods within an interface without requiring an instance of the interface to use them.
+	--- Utility methods are typically static, allowing you to call them directly on a class rather than on an object (With creation of object).
+	
+9. what is spring profiling...?
+========================
+ANS:
+	--- Spring profiling provides a way to segregate application configurations and make it only available in certain environments.
+	--- Ex: How to configure different databases at runtime based on the specific environment by their respective profiles.
+	--- The solution would be to create more property files and add the profile name as a suffix and configure springboot to pick the appropriate properties based on the profile.
+		EX:
+		a) application-dev.properties 
+		b) application-prod.properties
+		c) application-test.properties 
+	--- To activate other profiles than the default profile. we have to let spring know which profiles we want to activate (spring.profile.active=dev).
+	@PropertySource:
+	============
+	--- It allows you to specify the path to the property file(s). You can define multiple property files if needed. The properties from the specified file(s) are added to the Spring 
+	Environment, making them available to be injected into beans or accessed programmatically.
+	--- The @Value annotation is used to inject a property from this file into a class field.
+	Ex:
+	@Configuration
+	@PropertySource("classpath:application-external.properties")
+	public class MyConfig {
+		@Value("${external.property}")
+		private String externalProperty;
+	
+		public String getExternalProperty() {
+			return externalProperty;
+		}
+	}
+	
+	@Profile:
+	=======
+	--- @Profile is used to conditionally activate beans based on the active Spring profile.
+	Ex:
+	@Configuration
+	public class MyConfig {
+
+		@Bean
+		@Profile("development")
+		public MyService developmentService() {
+			return new MyService("Development configuration");
+		}
+
+		@Bean
+		@Profile("production")
+		public MyService productionService() {
+			return new MyService("Production configuration");
+		}
+	}
+	
+10. Can we override or replace Embedded Tomcat server in spring-boot...?
+==================================================
+ANS:
+	--- Yes, we can replace the Embadded Tomcat server with jetty server by using the "spring-boot-starter-jetty".
+	--- Before we need to exclude the "spring-boot-starter-tomcat" which is present in "spring-boot-starter-web".
+	EX:
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-web</artifactId>
+		<exclusions>
+			<exclusion>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-tomcat</artifactId>
+			</exclusion>
+		</exclusions>
+	</dependency>
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-jetty</artifactId>
+	</dependency>
+	
+11. Can we disable the default web server in the springboot application...?
+================================================
+ANS:
+	--- Yes, we can disable the default web server tomcat by simply configure on property in application.property file.
+	EX:
+	---> spring.main.web-application-type=none;
+	
+12. How to disable a specific auto-configuration class...?
+=====================================================
+ANS:
+	--- By simply specifying the "exclude" attribute in @EnableAutoConfiguration(exclude={"CustomerController.class","CustomerService.class"}).
+	
+13. How to use a property defined in application.property file into a java class...?
+=======================================================
+ANS:
+	a) Use the @Value annotation to access the property which is defined in application.property
+	EX:
+	@Value("${server.port}")
+	private Integer port;
+	
+	b) Using @ConfigurationProperties we can fetch the related properties which is having the prefix specified in annotation,
+	EX:
+	@ConfigurationProperties(prefix = "my.config")
+	public class MyConfig {
+		private String propertyOne; // my.config.propertyOne=someValue
+		private int propertyTwo;  // my.config.propertyTwo=42
+	}
+	
+14. Difference b/w @Controller and @RestController...?
+===========================================
+ANS:
+	a) @Controller:
+	===========
+	--- The @Controller annotation indicates that a particular class serves as a web controller. It's generally used to define controllers that handle web requests and return view 
+	templates or HTML content.
+	
+	b) @RestController:
+	=============
+	--- The @RestController annotation indicates that a class is a RESTful controller. It's used for REST APIs, where the controller primarily returns data (often in JSON or XML) 
+	instead of views or HTML content.
+	--- @RestController is effectively a shortcut for using @Controller and @ResponseBody together. This means all methods in a @RestController return data directly without 
+	the need for a view resolver.
+	
+15. What are the major difference b/w @RequestMapping and @GetMapping...?
+=======================================================
+ANS:
+	a) @RequestMapping:
+    ==============
+	--- It is a general-purpose annotation used to map HTTP requests to handler methods. It can be used for all HTTP methods, including GET, POST, PUT, DELETE, PATCH, etc.
+	
+	b) @GetMapping:
+	============
+	--- @GetMapping is a specialized annotation used for mapping HTTP GET requests. It is a shorthand for @RequestMapping(method = RequestMethod.GET).
+	
+16. What is spring Actuator...? What are it's advantage...?
+=======================================
+ANS:
+	--- Spring Boot Actuator provides production-ready features to help in monitor and manage our Spring Boot applications.It provides a set of endpoints that exposes the 
+	application's health, configuration, metrics, and operational information. 
+	--- we need to use one dependency to work with Actuator end-points.
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-actuator</artifactId>
+	</dependency>
+	--- By default exposed endpoints can be seen at:- (http://localhost:8081/actuator)
+	--- To explicity include all end points use this in property file:- (management.endpoints.web.exposure.include=*)
+	--- To expose only selected end-points:- (management.endpoints.web.exposure.include=health,info,env,beans)
+	
+	Enabling Http Trace:
+	==============
+	--- Before 2.2.x spring-boot you can just add dependency expose that HttpTrace by :- (management.endpoints.web.exposure.include=*)
+	--- But after 2.2.x spring-boot HttpTrace doesn't work at all. This is not a bug at all rather it is a legitimate change done because the default implementation stores the captured
+	data in memory. Hence it consumes much memory. That is why this feature is turned off  by default and has to turned on user explicitly.
+	
+17. How to customize the management(/actuator) server port...?
+====================================================
+ANS:
+	--- By default actuator end-points run on the same port which application is running on it. We can change it using this in property file:- (management.server.port=7865)

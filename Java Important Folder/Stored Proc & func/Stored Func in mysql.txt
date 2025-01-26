@@ -1,0 +1,95 @@
+Link to watch this concepts in youtube/google.
+===============================================
+1. https://www.youtube.com/playlist?list=PLT9miexWCpPUoMztUQSvkPGR6SYSnqK4Z -->(from playlist #17)
+2. doc (https://www.javatpoint.com/mysql-functions)
+
+
+Functions:
+===========
+    a. A stored function in MySQL is a stored program that can be invoked to perform a specific task and return a single value. It is similar to a stored procedure but is used specifically when you 
+       need to return a single value (e.g., a calculation or formatted string). 
+    b. Stored functions can be used in SQL statements like queries, where a value needs to be computed.
+    
+    Syntax:
+    ========
+        CREATE FUNCTION function_name(parameter_name datatype, ...)
+        RETURNS return_datatype [NOT] DETERMINISTIC
+        BEGIN 
+            -- Declare variables
+            DECLARE variable_name datatype;
+    
+            -- Perform operations
+            -- Set the value to be returned
+            RETURN value;
+        END;
+        ---------------------------------------------------------------------------------
+        Once the function is created, you can use it in SQL statements like this:
+        exec --> SELECT function_name(parameter_value,...);
+        
+    Ex1: 
+    =====
+        Q. Let’s create a simple stored function that calculates the factorial of a given number:
+        
+        DELIMITER //
+        
+        CREATE FUNCTION factorial(n INT)
+        RETURNS INT DETERMINISTIC
+        BEGIN
+            DECLARE result INT DEFAULT 1;
+            DECLARE counter INT DEFAULT 1;
+
+            -- Loop to calculate the factorial
+            WHILE counter <= n DO
+                SET result = result * counter;
+                SET counter = counter + 1;
+            END WHILE;
+
+            -- Return the factorial value
+            RETURN result;
+        END //
+
+        DELIMITER ;
+        -------------------------------------------------------------------------
+        exec --> SELECT factorial(5); -- Returns 120
+        
+    Explanation:
+    =============
+        a. Function Declaration:
+            1. CREATE FUNCTION factorial(n INT) declares the function factorial that takes an integer n as input.
+            2. RETURNS INT specifies that the function will return an integer.
+        b. Attributes:
+            1. DETERMINISTIC: Indicates that the function always produces the same result for the same input (important for performance and optimization).
+            2. NOT DETERMINISTIC : If a function can return different results for the same input (e.g., if it includes random or time-dependent operations), you would use NOT DETERMINISTIC.
+        c. Return Value:
+            1. The RETURN statement returns the computed factorial value.
+            
+    
+    Ex2:
+    =====
+        CREATE DEFINER=`root`@`localhost` FUNCTION `employee_func`(joining_year DATE) RETURNS int
+        DETERMINISTIC
+        BEGIN
+	       DECLARE current_year DATE;
+            select current_date() into current_year;
+            return year(current_year) - year(joining_year);
+        END
+        --------------------------------------------------------------------------------------------
+        exec --> select emp_id, emp_name, employee_func(emp_joining_date) as year from employee;
+
+            
+Use Cases for Stored Functions:
+================================
+    a. Mathematical Calculations: Functions like factorial, power, or sum.
+    b. Data Formatting: Functions to format dates, strings, or numbers.
+    c. Business Logic: Simple computations or checks based on business rules.
+    
+Differences Between Stored Procedures and Functions:
+=====================================================
+    a. Return Value: Functions must return a single value, whereas procedures may or may not return values and can return multiple result sets.
+    b. Use in Queries: Functions can be used in SQL expressions (e.g., in the SELECT list, WHERE clause), while stored procedures cannot be used directly in queries.
+    c. Invocation: Functions are invoked in SQL statements like SELECT, whereas procedures are invoked using CALL.
+
+        
+    
+
+       

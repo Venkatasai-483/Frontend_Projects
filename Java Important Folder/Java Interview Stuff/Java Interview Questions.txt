@@ -1,0 +1,157 @@
+1. Core Java:
+==============
+    a) String:
+    ===========
+        1. Why String is immutable in java..?
+        2. What is string constant pool in java..?
+        3. Why char array is preferred to store password than string in java..?
+        4. What is difference between StringBuilder and StringBuffer in java..?
+        5. Is string thread safe in java..?
+        6. Difference b/w '==' and '.equals()' in java..?
+    
+    
+    b) OOPS:
+    =========
+        1. Types of principles in OOPS and explain each..?
+        2. What is polymorphism and types of polymorphism..?
+        3. Difference b/w abstraction and interface in java..?
+        4. Can we able to create object for abstract classes..?
+        5. Can we able to create constructor in abstract classes..?
+        6. What are types of access specifiers..?
+        7. Can we override static method in java..?
+        8. How to prevent your class from being subclassed..?
+        9. Purpose of default constructor in java..?
+        10. Why multiple inheritence is not supported in java..?
+        11. What is difference b/w ClassNotFoundException and NoClassDefFoundError..?
+    
+
+    c) Exceptional Handling:
+    =========================
+        1. What is root class in exception handling..?
+        2. Difference b/w checked and unchecked exception in java..?
+        3. Tell me some Checked Exception and Unchecked Exception..?
+        4. If catch is not present, only finally is present, will the code works..?
+        5. In try,catch and finally we return the value, priority id in which block..?
+        6. Is finally block always be executed..?
+        7. Difference b/w final vs finally vs finalize() in java..?
+        8. Difference b/w throws and throw..?
+        9. What is the rule of multiple catch block in java..?
+        
+        
+    d) Collections:
+    ================
+        1. Difference b/w ArrayList and LinkedList in java..?
+        2. Difference b/w Hashset and LinkedHashSet in java..?
+        3. Internal working of HashSet..?
+        4. Internal working of HashMap..?
+        5. Difference b/w HashMap and ConcurrentHashMap..?
+        6. Difference b/w HashMap and HashTable..?
+        7. Difference b/w Stack and Queue..?
+        8. Explain FailFast iterator and FailSafe iterator..?
+       
+       
+    e) Multi-threading:
+    ====================
+        1. What is thread in java..?
+        2. How many ways to create thread..?
+        3. Which way is better to create thread in java..?
+        4. what is the purpose of start() and run() method in java..?
+        5. What are daemon thread in java..?
+        6. How Garbage Collector works in java..?
+         
+    
+    f) Java8 features:
+    ===================
+        1. Tell me some Java8 featues..?
+        2. What is functional interface in java..?(with example program)
+        3. Why default and Static methods are introduced in interface..?
+        4. What is lambda expression..?
+        5. What are streams in java..?
+        6. Tell me some Intermediate/Terminal methods in streams..?
+        7. What is Optional class in java..?
+        8. Difference b/w comparator and comparable in java..?
+        9) Tell me some predefined functional interfaces in java8 and with example program..?
+        
+        
+     g) Coding Questions:
+     =====================
+         1. How to reverse string in java..?
+         2. How to create immutable class in java..?
+         3. Create custom exception in java..?
+         4. What is Singleton and create singleton class..?
+         5. Create Double Locking singleton class..?
+         
+         
+2. Spring:
+===========
+    a) What is IOC in spring..?
+    b) What is dependency Injection in spring..?
+    c) Ways to Injecting the dependency..?
+    d) Types of containers in spring..?
+    e) Difference b/w BeanFactory and ApplicationContext..?
+    f) Types of bean scope in spring..?
+    g) What is AOP in spring..?
+    h) In which scenario, you will use singleton and prototype scope..?
+    
+    
+3. Springboot:
+===============
+    a) What is @SpringBootApplication..?
+    b) Why Springboot over Spring..?
+    b1) What are the features of springboot..?
+    b2) What is the internal working of .run() inside main method..?
+    b3) What is the starter dependency of springboot module..?
+    c) What is @Autowired annotation..?
+    d) What is Controller, Service and Repository..?
+    d1) Describe the flow of HTTP requests through springboot..?
+    d2) What is JPA..?
+    e) Difference b/w POST and PUT..?
+    f) Difference b/w PUT and PATCH..?
+    g) Tell me some status codes..?
+    h) What is @ControllerAdvice..?
+    i) What is profiling in springboot..?
+    j) How to active particular profile like dev/test/uat/prod..?
+    k) Can we use GET in place of POST and vice versa..?
+    k1) Difference b/w RequestMapping and GetMapping..?
+    l) How do we create POST request in springboot..?
+    m) What is one to one mapping and how to setup in JPA..?
+    n) What is the use of acuators in springboot..?
+    n1) How to enable Actuator in sprinboot..?
+    n2) How to access actuator end points..?
+    o) How to disable tomcat server in sprinboot..?
+    o1) Is it possible to change port of tomcat server..?
+    o2) What is the default port of tomcat..?
+    p) How to change default server to someother in sprinboot..?
+    q) How can we read the property from application.property file..?
+    r) What is the use of @Value annotation..?
+    s) How to disable a specific auto-configuration class..?
+    t) List of mobile numbers, find customer having number starts with +91 in springboot..?
+    u) Tell me singleton design pattern..?
+    v) Tell me solid principles..?
+    w) Difference b/w @RestController and @Controller..?
+    x) What are springboot DevTool used for..?
+    
+
+4. Microservices:
+==================
+    a) Why microservices..?
+    b) Difference b/w monolithic architecture and microservice architecture..?
+    c) What is Eureka Server..?
+    d) What is API gateway..?
+    e) What is the default port of Eureka server..?
+    f) What is load balancer..?
+    g) How the communication happens b/w one microservice to other microservice..?
+    h) What is the @FeignClient..?
+    i) What is fault tolerance..?
+    j) What is RestTemplate..?
+    k) 
+      
+    
+    
+    
+    
+    
+    
+    
+    
+    

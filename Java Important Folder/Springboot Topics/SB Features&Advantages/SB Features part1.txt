@@ -1,0 +1,506 @@
+Springboot Features:
+=====================
+    -- Spring Boot is a powerful framework built on top of the Spring Framework that simplifies the development of stand-alone, production-grade Spring applications. It offers a wide range of features 
+       that reduce the complexity of configuring and managing Spring applications.
+       A. Auto-Configuration
+       B. Spring Boot Starters
+       C. Embedded Servers
+       D. Spring Boot Actuator
+       E. Spring Boot DevTools
+       F. Externalized Configuration
+       G. Spring Initializr
+       H. Production-Ready Features
+       I. Microservices Support
+       
+    A. Auto-Configuration: Link(https://www.javatpoint.com/spring-boot-auto-configuration)
+    =======================
+        Feature:
+        =========
+            1. Spring Boot provides an auto-configuration feature that automatically configures your Spring application based on the dependencies you have included in your pom.xml or 
+               build.gradle file.
+            2. For example, if you include spring-boot-starter-data-jpa as a dependency, Spring Boot will automatically configure a "DataSource", "EntityManagerFactory", and "TransactionManager" 
+               based on your database properties.
+                   
+        Advantages:
+        ============
+            1. Reduced Configuration: Developers don't need to manually configure beans or XML files for most scenarios.
+            2. Convention over Configuration: Follows sensible defaults, allowing developers to focus on business logic rather than boilerplate code.
+                   
+        Need of auto-configuration:
+        ============================
+            1. When we add the spring-boot-starter-web dependency in the project, Spring Boot auto-configuration looks for the Spring MVC is on the classpath. It auto-configures dispatcherServlet, 
+               a default error page, and web jars.
+            2. Similarly, when we add the spring-boot-starter-data-jpa dependency, we see that Spring Boot Auto-configuration, auto-configures a datasource and an Entity Manager.
+            3. Similarly, when we use Hibernate/ JPA, we need to configure datasource, a transaction manager, an entity manager factory among a host of other things.
+                
+            -->>> Below is the way to manually write configurations in XML file. But in springboot, If we add that JPA dependency it will automatically configures the required classes.
+                
+            Configuring datasource:
+            ========================
+                <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">  
+                    <property name="driverClass" value="${db.driver}" />  
+                    <property name="jdbcUrl" value="${db.url}" />  
+                    <property name="user" value="${db.username}" />  
+                    <property name="password" value="${db.password}" />  
+                </bean>  
+                <jdbc:initialize-database data-source="dataSource">  
+                    <jdbc:script location="classpath:config/schema.sql" />  
+                    <jdbc:script location="classpath:config/data.sql" />  
+                </jdbc:initialize-database>  
+                    
+            Configuring entity manager factory:
+            ====================================
+                <bean class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean" id="entityManagerFactory">  
+                    <property name="persistenceUnitName" value="hsql_pu" />  
+                    <property name="dataSource" ref="dataSource" />  
+                </bean>  
+                    
+            Configuring transaction manager:
+            =================================
+                <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">  
+                    <property name="entityManagerFactory" ref="entityManagerFactory" />  
+                    <property name="dataSource" ref="dataSource" />  
+                </bean>  
+                <tx:annotation-driven transaction-manager="transactionManager"/> 
+                    
+            
+        Key Concepts of Auto-Configuration:
+        ====================================
+            1. Convention over Configuration:
+            ==================================
+                -- Auto-configuration is based on the principle of "convention over configuration," which means that the framework assumes sensible defaults based on common use cases. Developers 
+                   only need to override these defaults if necessary.
+                       
+            2. Conditional Configuration:
+            ==============================
+                Spring Boot uses several annotations to conditionally apply configurations. For instance:
+                a. @ConditionalOnClass: The configuration is applied only if a specified class is present on the classpath.
+                b. @ConditionalOnMissingBean: The configuration is applied only if a certain bean is not already defined.
+                c. @ConditionalOnProperty: The configuration is applied based on the presence or value of a property in the application's configuration files.
+                    
+            3. Spring Factories:
+            =====================
+                -- Auto-configuration classes are registered using the "spring.factories" file. This file, typically located in "META-INF/spring.factories", lists all the auto-configuration classes 
+                   that should be loaded when the application starts.
+                --> org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+                    com.example.config.SomeAutoConfiguration,\
+                    com.example.config.AnotherAutoConfiguration
+                        
+            4. Auto-Configuration Classes:
+            ===============================
+                -- These classes are typically annotated with @Configuration and contain bean definitions that set up various aspects of the application context based on conditions.
+                -- In the above example, the DataSourceAutoConfiguration class configures a DataSource bean if the DataSource class is present on the classpath and no other DataSource bean is 
+                   already defined.
+                    @Configuration
+                    @ConditionalOnClass(DataSource.class)
+                    public class DataSourceAutoConfiguration {
+                        
+                        @Bean
+                        @ConditionalOnMissingBean
+                        public DataSource dataSource() {
+                            // Create and configure the DataSource bean
+                            return new HikariDataSource();
+                        }
+                    }
+                    
+            5. Starter POMs:
+            =================
+                -- Spring Boot provides a collection of "starter" POMs (Project Object Models) that bundle dependencies together. These starters trigger the auto-configuration process. For example, 
+                   including spring-boot-starter-web in your project brings in dependencies like Spring MVC and Tomcat, and Spring Boot automatically configures a web application context.
+                    <dependency>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-starter-web</artifactId>
+                    </dependency>
+                       
+            6. Overriding Auto-Configuration:
+            ==================================
+                -- While auto-configuration provides a convenient way to set up your application, Spring Boot also allows you to override these configurations easily:
+                -- Properties Configuration: You can use properties files (application.properties or application.yml) to change configuration settings.
+                -- Custom Beans: You can define your own beans that override the auto-configured ones by simply declaring them in your @Configuration class.
+                    
+            7. Excluding Auto-Configuration:
+            =================================
+                Sometimes, you might not want certain auto-configurations to apply. Spring Boot allows you to exclude specific auto-configuration classes.
+                Ex:
+                ====
+                    @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
+                    public class MyApplication {
+                        public static void main(String[] args) {
+                            SpringApplication.run(MyApplication.class, args);
+                        }
+                    }
+                        
+            8. Debugging Auto-Configuration:
+            =================================
+                -- Spring Boot provides a useful tool for debugging auto-configuration called the AutoConfigurationReport.
+                -- You can use the --debug flag to run the application in debug mode, which will log a report showing which auto-configuration classes were applied and which were not, 
+                   along with the reasons.
+                -- java -jar myapp.jar --debug
+
+        Real-World Example:
+        ====================
+            -- Imagine you’re building a Spring Boot application that needs to connect to a database. If you include the spring-boot-starter-data-jpa dependency in your project, Spring Boot’s 
+               auto-configuration mechanism will:
+                a. Detect that JPA (Java Persistence API) is on the classpath.
+                b. Automatically configure a DataSource bean.
+                c. Set up an EntityManagerFactory.
+                d. Configure transaction management.
+                e. Apply sensible defaults, such as reading database connection details from application.properties.
+                
+    B. Spring Boot Starters: Link(https://www.youtube.com/watch?v=aMXL-Pejvps) & DOC(https://www.geeksforgeeks.org/spring-boot-starters/)
+    =========================
+        Feature:
+        =========
+            Starters are a set of convenient dependency descriptors you can include in your application. They bring in all the necessary dependencies for your application to work.
+            Example: spring-boot-starter-web brings in dependencies for building web applications using Spring MVC, Tomcat as the embedded server, and Jackson for JSON processing.
+            
+        Advantages:
+        ============
+            Simplified Dependency Management: One starter can bring in a comprehensive set of dependencies, eliminating the need to manually manage each one.
+            Quick Start: Starters allow developers to get up and running with specific functionalities quickly.
+
+        Note:
+        =====
+            -- Spring Boot Starters are a set of convenient dependency descriptors that you can include in your Spring Boot project. They simplify the process of setting up a Spring application 
+               by providing pre-configured sets of dependencies that are commonly used together. 
+            -- Each starter brings in a collection of libraries and configurations to help you quickly get started with a particular feature or technology without having to manually manage 
+               individual dependencies.
+               
+        Key Concepts of Spring Boot Starters:
+        ======================================
+            1. Purpose of Starters:
+            ========================
+                -- Simplify Dependency Management: Starters bundle together common dependencies for a specific feature or functionality, eliminating the need to add and configure each dependency manually.
+                -- Encourage Best Practices: By providing curated sets of dependencies, starters promote best practices and prevent common configuration errors.
+                
+            2. Naming Convention:
+            ======================
+                Most starter POMs (Project Object Models) follow the naming convention "spring-boot-starter-<feature>", making it easy to understand what each starter provides.
+                Ex:
+                ====
+                    spring-boot-starter-web: For building web applications, including RESTful services using Spring MVC.
+                    spring-boot-starter-data-jpa: For integrating with JPA (Java Persistence API) and relational databases.
+                    
+            3. How Starters Work:
+            ======================
+                -- When you include a starter dependency in your pom.xml (Maven) or build.gradle (Gradle) file, Maven or Gradle automatically pulls in all the libraries and their transitive dependencies 
+                   required to work with the specified feature.
+                -- Starters also include necessary auto-configuration classes, which Spring Boot uses to automatically configure your application based on the included dependencies.   
+                
+            4. Core Components of Starters:
+            ================================
+                -- Dependencies: Each starter includes a list of dependencies required for a specific feature.
+                -- Auto-Configuration: Starters often include auto-configuration classes that set up necessary beans and configurations based on the presence of certain dependencies.
+                -- Transitive Dependencies: Starters also bring in transitive dependencies—libraries that are required by the libraries included in the starter.
+
+        Examples of Common Spring Boot Starters:
+        =========================================
+            1. spring-boot-starter:
+            ========================
+                Purpose: The core starter that includes basic dependencies like Spring Framework and logging. It’s the foundational starter used by most other starters.
+                Includes:
+                    Spring Core
+                    Spring Context
+                    Spring AOP
+                    Logging (SLF4J and Logback)
+                Ex:
+                ====
+                    <dependency>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-starter</artifactId>
+                    </dependency>
+                    
+            2. spring-boot-starter-web:
+            ============================
+                Purpose: For building web applications, including RESTful APIs.
+                Includes:
+                    Spring MVC
+                    Jackson (for JSON processing)
+                    Validation API
+                    Embedded Tomcat (or Jetty/Undertow as alternatives)
+                    
+            3. spring-boot-starter-data-jpa:
+            =================================
+                Purpose: For working with relational databases using JPA (Java Persistence API).
+                Includes:
+                    Spring Data JPA
+                    Hibernate (as the default JPA provider)
+                    Spring ORM
+                    HikariCP (for connection pooling)
+                    
+            4. spring-boot-starter-security:
+            =================================
+                Purpose: For securing applications, handling authentication, authorization, and more.
+                Includes:
+                    Spring Security
+                    Required dependencies for basic security mechanisms
+                    
+            5. spring-boot-starter-test:
+            =============================
+                Purpose: For testing Spring Boot applications.
+                Includes:
+                    JUnit
+                    Spring Test (for integration testing)
+                    AssertJ (for fluent assertions)
+                    Hamcrest (for matchers)
+                    Mockito (for mocking)
+                    
+        Creating Custom Starters:
+        ==========================
+            You can create your own starter if you have a set of dependencies and configurations that you frequently use across multiple projects.
+            Steps:
+                Create a new Maven or Gradle project.
+                Add the common dependencies and configurations to the pom.xml or build.gradle file.
+                Package the project as a JAR file.
+                Include your custom starter in other projects as a dependency.
+            Example: Suppose you frequently use a specific set of libraries for data processing, you could create a spring-boot-starter-data-processing starter that bundles these dependencies together.
+            
+        How Starters Facilitate Development:
+        =====================================
+            a. Quick Setup:
+                Starters allow developers to quickly bootstrap a project with just a few lines of configuration. For instance, adding spring-boot-starter-web to a project sets up a fully functional 
+                web application with an embedded server and all necessary configurations.
+            b. Avoiding Version Conflicts:
+                Managing individual dependencies can lead to version conflicts, especially in large projects. Spring Boot starters are designed to work together, minimizing the risk of dependency clashes.
+            c. Consistent Configuration:
+                Starters provide a consistent configuration across different projects. This means that developers can move between projects without needing to relearn how things are set up.
+            d. Reducing Boilerplate Code:
+                By using starters, developers can avoid writing boilerplate code, as the necessary configurations and dependencies are already provided. This allows them to focus more on the business 
+                logic of their applications.
+                
+        Advanced Features and Considerations:
+        ======================================
+            a. Optional Dependencies:
+            ==========================
+                Some starters include optional dependencies that are activated based on the presence of certain classes on the classpath. This is controlled by Spring Boot’s auto-configuration mechanism.
+                
+            b. Excluding Specific Dependencies:
+            ====================================
+                If you need to exclude a specific dependency brought in by a starter, you can do so in your pom.xml or build.gradle file.
+                Ex:
+                ====
+                    <dependency>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-starter-web</artifactId>
+                        <exclusions>
+                            <exclusion>
+                                <groupId>org.springframework.boot</groupId>
+                                <artifactId>spring-boot-starter-tomcat</artifactId>
+                            </exclusion>
+                        </exclusions>
+                    </dependency>
+                    
+        Parent starter:
+        ================
+            -- In Spring Boot, a parent starter refers to the spring-boot-starter-parent, which acts as the foundational parent project for Spring Boot applications. 
+            -- It provides a set of common configurations, dependency management, and defaults that help simplify project setup. When you use spring-boot-starter-parent in your project, you inherit 
+               its configurations, which handle things like dependency versions, plugin configurations, and more, making it easier to manage a Spring Boot project.
+               
+               Key Features of spring-boot-starter-parent:
+               ============================================
+                   1. Dependency Management:
+                   ==========================
+                       -- It manages versions of dependencies (such as Spring libraries, third-party libraries, etc.), so you don't need to specify the version for each individual dependency. 
+                          This ensures that all libraries are compatible with each other.
+                       -- Spring Boot uses a Bill of Materials (BOM) mechanism to manage consistent versions across all dependencies. This ensures version compatibility for various libraries.
+                   
+                   2. Plugin Management:
+                   ======================
+                       -- It also provides configurations for commonly used Maven plugins (like the Spring Boot Maven Plugin) to build, package, and run Spring Boot applications.
+                       -- This makes it easier to perform common tasks such as building JARs or WARs, running applications, or creating Docker images without having to configure these plugins manually.
+                       
+                   3. Default Java Version:
+                   =========================
+                        -- The spring-boot-starter-parent specifies a default Java version. For example, Spring Boot 2.x usually defaults to Java 8 or 11, but you can easily override this by 
+                           specifying your preferred version in your project’s pom.xml.
+                           
+                   4. Inherits from Spring Boot's BOM:
+                   ====================================
+                        -- The parent starter includes a list of dependencies with pre-defined versions, which are all managed internally. This means that when you include dependencies like 
+                           spring-boot-starter-web, you don’t have to manually specify the version—it’s automatically resolved from the parent starter.
+                           
+                   5. Default Profiles:
+                   =====================
+                        -- It can provide default profiles and configuration settings that are common for Spring Boot projects. This includes default settings for logging, dependency resolution, and more.
+                        
+           Ex:
+           ====
+               <project xmlns="http://maven.apache.org/POM/4.0.0"
+                     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+                   <modelVersion>4.0.0</modelVersion>
+                   
+                   <parent>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-starter-parent</artifactId>
+                        <version>3.0.0</version> <!-- Change the version as per your Spring Boot version -->
+                        <relativePath/> <!-- To indicate that it's a standard parent -->
+                    </parent>
+                    
+                    <groupId>com.example</groupId>
+                    <artifactId>demo-app</artifactId>
+                    <version>0.0.1-SNAPSHOT</version>
+                    <name>Demo Application</name>
+                    <description>Demo project using Spring Boot</description>
+                    
+                    <properties>
+                        <java.version>11</java.version> <!-- Override default Java version if needed -->
+                    </properties>
+
+               </project>
+ 
+                                                                       
+    C. Embedded Servers: Doc(https://www.springboottutorial.com/java-programmer-essentials-what-is-an-embedded-server)
+    =====================
+        -- Embedded servers in Spring Boot are web servers that are embedded directly within your Spring Boot application. Unlike traditional Java web applications, where you would deploy a WAR file 
+           to an external web server like Tomcat, Jetty, or WildFly, Spring Boot allows you to bundle the server within your application itself, turning it into a standalone executable JAR or WAR file.
+           
+        Feature:
+        =========
+            Spring Boot supports embedded servers like Tomcat, Jetty, and Undertow, meaning you can run your application as a simple Java application without needing to deploy it to an external server.
+        Advantages:
+        ============
+            a. Portability: Applications can be easily packaged as a JAR file and run anywhere with a Java environment.
+            b. Simplified Deployment: Reduces the complexity of deploying applications, as there’s no need to configure or manage an external server.
+            c. Development Speed: Ideal for rapid development and testing, especially when combined with tools like Spring Boot DevTools.
+            
+       Key Concepts of Embedded Servers in Spring Boot:
+       =================================================
+           a. Self-Contained Application:
+           ===============================
+                -- With embedded servers, your Spring Boot application is completely self-contained. This means you don’t need to install or configure an external web server. You can package your 
+                   application as a JAR file that includes everything it needs to run, including the server.
+                   
+           b. Common Embedded Servers:
+           ============================
+               a. Tomcat: The default embedded server in Spring Boot. It’s widely used and fully supported by Spring.
+               b. Jetty: A lightweight and highly configurable web server and servlet container.
+               c. Undertow: Known for its lightweight and fast performance, Undertow is another option supported by Spring Boot.
+               d. Netty: A non-blocking I/O server suitable for building high-performance web applications, especially in reactive programming models.
+               
+            c. How It Works:
+            =================
+                -- When you create a Spring Boot application with web support (e.g., by using spring-boot-starter-web), Spring Boot automatically includes an embedded server. When you run the 
+                   application, the server is started, and it hosts your application on a default port (usually 8080).
+                -- The application is packaged as a single executable JAR, which includes your code, the Spring Boot framework, and the embedded server.
+                -- You can start the application with a simple command like java -jar your-application.jar, and it will start the embedded server and deploy your application to it.
+                
+            d. Configuration:
+            ==================
+                a. Default Port: The default port for an embedded server is 8080. You can change this by setting the server.port property in your application.properties or application.yml.
+                   --> server.port=9090
+                b. Context Path: By default, the context path is /, meaning your application is accessible directly at "http://localhost:8080/". You can change the context path by setting 
+                   --> server.servlet.context-path=/myapp
+                c. SSL/TLS Configuration: You can configure SSL for your embedded server by setting properties in application.properties.
+                   --> server.port=8443
+                       server.ssl.key-store=classpath:keystore.jks
+                       server.ssl.key-store-password=changeit
+                       server.ssl.key-password=changeit
+                d. Embedded Server Customization: You can customize the embedded server by implementing the "WebServerFactoryCustomizer" interface or configuring specific server properties.
+                       @Configuration
+                       public class ServerConfig implements WebServerFactoryCustomizer<TomcatServletWebServerFactory> {
+                           @Override
+                           public void customize(TomcatServletWebServerFactory factory) {
+                               factory.setPort(8081);
+                               factory.setContextPath("/custom");
+                           }
+                       }
+                       
+            e. Changing the Embedded Server:
+            =================================
+                By default, Spring Boot uses Tomcat, but you can switch to a different embedded server by excluding the default one and including another.
+                Example: Switching to Jetty
+                ============================
+                    <dependencies>
+                        <!-- Exclude Tomcat -->
+                        <dependency>
+                            <groupId>org.springframework.boot</groupId>
+                            <artifactId>spring-boot-starter-tomcat</artifactId>
+                            <scope>provided</scope>
+                        </dependency>
+                        <!-- Include Jetty -->
+                        <dependency>
+                            <groupId>org.springframework.boot</groupId>
+                            <artifactId>spring-boot-starter-jetty</artifactId>
+                        </dependency>
+                   </dependencies>
+                   
+            f. Benefits of Using Embedded Servers:
+            =======================================
+                a. implicity: No need for separate server installation, configuration, or maintenance. The server is bundled with your application.
+                b. Portability: The application is packaged as a single JAR or WAR file that can be easily deployed to any environment that supports Java. This makes deployment consistent 
+                   across different environments (development, staging, production).
+                c. Isolation: Each Spring Boot application runs its own server instance, meaning different applications can run on different ports without conflict.
+                d. Microservices Support: Embedded servers are particularly well-suited for microservices architectures, where each microservice can be run independently with its own server.
+                e. Development Convenience: Developers can run the application with a single command, making development and testing easier. There's no need to deploy the application to an 
+                   external server every time a change is made.
+                   
+            g. Drawbacks:
+            ==============
+                a. Memory Overhead: Bundling the server within the application may result in slightly higher memory usage compared to deploying to a shared external server.
+                b. Operational Concerns: In environments where operations teams are used to managing application servers separately, the embedded server model may require a shift in operational practices.
+                c. Limited Server Features: Some advanced features provided by full-fledged application servers might not be available or fully supported by embedded servers.
+                
+            h. Running Applications with Embedded Servers:
+            ===============================================
+                When running a Spring Boot application with an embedded server, you have several options:
+                a. Direct Execution: Run directly from your IDE or command line using mvn spring-boot:run or ./gradlew bootRun.
+                b. Executable JAR: Package your application as an executable JAR and run it using java -jar.
+                c. WAR Deployment: While Spring Boot applications typically run as JARs, you can still package them as WARs if you need to deploy them to a traditional application server.
+                   
+
+        Advanced Features and Customization:
+        ======================================
+            a. Server-Specific Customization:
+            ==================================
+                Each embedded server has specific options for customization:
+                a. Tomcat: Customize connectors, threads, and request processing.
+                b. Jetty: Customize Jetty handlers, connectors, and request logs.
+                c. Undertow: Customize worker threads, I/O threads, and HTTP listeners.
+
+            b. Graceful Shutdown:
+            ======================
+                -- Embedded servers in Spring Boot can be configured for graceful shutdown, allowing the server to finish processing ongoing requests before shutting down. This can be critical 
+                   in production environments to avoid disrupting active sessions.
+                   - server.shutdown=graceful
+                   - server.shutdown-timeout=30s
+                   
+            c. Multiple Connectors:
+            ========================
+                You can configure multiple connectors (e.g., HTTP and HTTPS) for your embedded server. This is useful if you want your application to listen on multiple ports.
+                @Bean
+                public TomcatServletWebServerFactory servletContainer() {
+                    TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory();
+                    factory.addAdditionalTomcatConnectors(createSslConnector());
+                    return factory;
+                }
+
+                private Connector createSslConnector() {
+                    Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
+                    connector.setScheme("https");
+                    connector.setSecure(true);
+                    connector.setPort(8443);
+                    return connector;
+                }
+                
+            d. Deploying to Cloud Platforms:
+            =================================
+                -- The portability of Spring Boot applications with embedded servers makes them ideal for deployment on cloud platforms like AWS, Azure, Google Cloud, and Heroku. 
+                   These platforms often expect applications to be self-contained and capable of running on any instance without relying on external infrastructure.
+
+
+
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                

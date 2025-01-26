@@ -1,0 +1,272 @@
+Dependency Injection:
+======================
+    -- Dependency Injection (DI) is a design pattern in software development used to implement Inversion of Control (IoC), where the control of creating and managing objects is delegated to an external 
+       entity. This approach improves code modularity, testability, and flexibility.
+       
+    1. What is Dependency Injection?
+    ==================================
+        -- When a class depends on another class to perform its tasks, that dependency can either:
+           -- Be created inside the class (tight coupling).
+           -- Be injected into the class from the outside (loose coupling).
+
+        -- Dependency Injection is a way of providing those dependencies (objects or services) from the outside of the dependent class instead of the class creating them itself.
+        
+    2. Why Dependency Injection?
+    ==============================
+        a. Reduces Coupling: Classes no longer depend on specific implementations but on abstractions (e.g., interfaces).
+        b. Increases Testability: Dependencies can easily be mocked or replaced for testing purposes.
+        c. Improves Code Maintainability: Swapping dependencies becomes easier.
+        d. Adheres to SOLID Principles: Specifically, the Dependency Inversion Principle (DIP).
+        
+    3. How Dependency Injection Works:
+    ===================================
+        a. Example: Without DI
+        ========================
+            class Car {
+                private Engine engine;
+
+                public Car() {
+                    this.engine = new Engine(); // Tight coupling
+                }
+
+                public void start() {
+                    engine.run();
+                }
+            }
+            
+        -- Here, Car depends directly on the Engine class. If we need a different Engine implementation, the Car class must be modified.
+            
+        b. Example: With DI
+        =====================
+            class Car {
+                private Engine engine;
+
+                public Car(Engine engine) { // Dependency is injected
+                    this.engine = engine;
+                }
+
+                public void start() {
+                    engine.run();
+                }
+            }
+            
+        -- Now, the Car class depends on the abstraction of Engine rather than its implementation. Any engine implementation can be injected, promoting flexibility.
+        
+    4. Types of Dependency Injection
+    ==================================
+        a. Field Injection:
+        ====================
+            -- Dependency is set into field of class.
+            -- Spring uses reflection, it iterates over fields and resolve dependencies.
+            
+            Example:
+            =========
+                @Component
+                public class MyService {
+                    @Autowired
+                    private MyRepository repository;
+
+                    public void performTask() {
+                        repository.saveData();
+                    }
+                }
+
+                @Repository
+                class MyRepository {
+                    public void saveData() {
+                        System.out.println("Data saved!");
+                    }
+                }
+
+            
+            Advantages:
+            ============
+                -- Simple and easy to use
+                
+            Disadvantages:
+            ===============
+                -- Cannot be used with immutable(final) fields.
+                   -- @Autowired on final variables fails because Spring injects dependencies of final variables after the object is constructed, violating the immutability of final.
+                   -- The recommended solution is to use constructor injection, which ensures dependencies are injected during the object's construction, preserving the final constraint.
+                -- Chance of NullPointerException.
+                   -- When you use @Autowired on a field, Spring performs dependency injection after the object is constructed (via reflection). The lifecycle of the object and its dependencies is 
+                      managed by the Spring container.
+                   -- However, if you try to use the @Autowired field before Spring has completed the injection, it will be null, leading to an NPE.
+                   -- If you access the @Autowired field in the constructor, it will be null because Spring has not injected the dependency yet.
+                   
+        b. Setter Injection:
+        =====================
+            --  Spring injects the dependency using a public setter method. This allows dependencies to be injected after the object is constructed.
+            -- We have annotate the method using @Autowired.
+            
+            Example:
+            =========
+                @Component
+                public class MyService {
+                    private MyRepository repository;
+
+                    // Dependency is injected via setter
+                    @Autowired
+                    public void setRepository(MyRepository repository) {
+                        this.repository = repository;
+                    }
+
+                    public void performTask() {
+                        repository.saveData();
+                    }
+                }
+
+                @Repository
+                class MyRepository {
+                    public void saveData() {
+                        System.out.println("Data saved!");
+                    }
+                }
+                
+            Advantages:
+            ============
+                -- Flexible: allows changing dependencies at runtime.
+                -- Easy for junit testing. we can pass mock object in dependencies easily.
+                
+            Disadvantages:
+            ===============
+                -- field can't be marked as final.
+               
+               
+        c. Constructor Injection:
+        ==========================
+            -- Dependencies are provided through a class's constructor. This approach ensures immutability since the dependencies are provided when the object is created and cannot be changed later.
+            -- When there is one constructor is present, @Autowired is not mandatory. But if there are multiple we should use @Autowired for every constructor.
+            -- It's recommended.
+            
+            Example:
+            =========
+                @Component
+                public class MyService {
+                    private final MyRepository repository;
+
+                    // Dependency is injected via constructor
+                    public MyService(MyRepository repository) {
+                        this.repository = repository;
+                    }
+
+                    public void performTask() {
+                        repository.saveData();
+                    }
+                }
+
+                @Repository
+                class MyRepository {
+                    public void saveData() {
+                        System.out.println("Data saved!");
+                    }
+                }
+                
+            Advantages:
+            ============
+                -- All mandatory dependencies will be injected at the time of initialization itself.
+                -- Makes 100% sure that our object will be initialized with all the required dependencies.
+                -- Avoids NullpointerException.
+                -- We can create immutable object using constructor injection.
+                -- Makes testing easier with tools like Mockito.
+                -- Fail Fast: Fail at compilation only in case of missing dependencies.
+                
+            Disadvantages:
+            ===============
+                -- May become cumbersome with many dependencies.
+
+    5. Problems faced during DI:
+    =============================
+        1. Circular Dependencies:
+        ==========================
+            Problem:
+            =========
+                -- When two or more beans depend on each other, it creates a circular reference.
+                -- This results in a BeanCurrentlyInCreationException because Spring cannot resolve the dependency chain.
+                Example:
+                =========
+                    @Component
+                    public class ServiceA {
+                        @Autowired
+                        private ServiceB serviceB;
+                    }
+
+                    @Component
+                    public class ServiceB {
+                        @Autowired
+                        private ServiceA serviceA;
+                    }
+                    
+            Solution:
+            ==========
+                -- Refactor the code to eliminate circular dependencies by introducing a third bean or interface to decouple the dependency chain.
+                -- Use @Lazy annotation on one of the beans to delay its initialization:
+                
+                Example:
+                =========
+                    @Component
+                    public class ServiceA {
+                        @Autowired
+                        @Lazy
+                        private ServiceB serviceB;
+                    }
+                    
+        2. Ambiguous Dependency:
+        =========================
+            Problem:
+            =========
+                -- When multiple beans of the same type exist in the application context, Spring fails to resolve which bean to inject and throws a NoUniqueBeanDefinitionException.
+
+            Solution:
+            ==========
+                -- Use the @Primary annotation on one bean to mark it as the default
+                
+        3. Missing Dependency:
+        =======================
+            Problem:
+            =========
+                -- If a required dependency is not defined in the Spring context, Spring throws a NoSuchBeanDefinitionException.
+
+            Solution:
+            ==========
+                -- Ensure the dependency is annotated with a Spring stereotype annotation like @Component, @Service, or @Repository, or is explicitly defined in a @Configuration class.
+                -- Check the component scan configuration to ensure the package containing the bean is scanned.
+                
+        4. Overuse of Field Injection:
+        ===============================
+            Problem:
+            =========
+                Field injection makes testing and mocking dependencies harder because the injected fields are private and final fields cannot be injected. This also makes the code less clean and maintainable.
+
+            Solution:
+            ==========
+                Use constructor-based injection instead of field injection. Constructor injection improves testability and ensures all dependencies are available at creation time.
+
+                    
+            
+
+
+                
+
+            
+                
+                
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+

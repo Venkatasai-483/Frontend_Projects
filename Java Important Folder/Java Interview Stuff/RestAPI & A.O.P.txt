@@ -1,0 +1,175 @@
+1. RESTful WebServices:
+===================
+	1a. What is REST API...?
+	=================
+		--- It is an architectural style for developing the web applications contains an client and server where client send the request to server for accessing protected resources.
+
+	1b. What are the HTTP Methods...?
+	==========================
+		--- GET, POST, PUT, PATCH, DELETE.
+
+	1c. HTTP Status codes...?
+	================
+	2xx Successful:
+	==========
+	200 OK -:::- The request was successful, and the server is returning the requested resource.
+	201 Created -:::- The request was successful, and a new resource was created (often used for POST requests).
+	202 Accepted -:::-  The request has been accepted for processing, but the processing is not complete.
+	204 No Content -:::-  The request was successful, but there's no content to return.
+
+	4xx Client Errors:
+	===========
+	400 Bad Request -:::-  The request was invalid or malformed.
+	401 Unauthorized -:::-  The client must authenticate to access the requested resource.
+	403 Forbidden -:::-  The client is not authorized to access the requested resource.
+	404 Not Found -:::-  The requested resource could not be found on the server.
+	405 Method Not Allowed -:::-  The HTTP method used in the request is not allowed for the requested resource.
+	406 Not Acceptable -:::-  The requested resource cannot produce a response matching the client's Accept headers.
+	408 Request Timeout -:::-  The server timed out waiting for the client's request.
+	429 Too Many Requests -:::- status code used to indicate that the user has sent too many requests in a given timeframe. This status code is commonly used to enforce rate limiting, 
+	preventing clients from overwhelming the server or consuming excessive resources.
+
+	5xx Server Errors:
+	============
+	500 Internal Server Error -:::- The server encountered an unexpected error while processing the request.
+	501 Not Implemented -:::- The server does not support the functionality required to fulfill the request.
+	502 Bad Gateway -:::- The server, acting as a gateway or proxy, received an invalid response from an upstream server.
+	503 Service Unavailable -:::- The server is temporarily unable to handle the request, usually due to maintenance or overload.
+	504 Gateway Timeout -:::- The server, acting as a gateway or proxy, timed out while waiting for an upstream server.
+	505 HTTP Version Not Supported -:::- The server does not support the HTTP version used in the request.
+
+2. Aspect-Oriented Programming (AOP):
+=============================
+	2a. What is Aspect-Oriented Programming (AOP):
+	===================================
+	--- Aspect-Oriented Programming (AOP) is a programming paradigm that enables the modularization of cross-cutting concerns in software applications. 
+	--- Each layer is having different responsibilities and there are some common aspects which get applied to all the layers. eg. logging, security, validations, error handling etc.
+	Common aspects are also called as cross-cutting concerns.
+	--- AOP allows you to separate these concerns from the core application logic, making your code more maintainable and less cluttered.
+	--- Spring AOP has interceptors which can intercept application and it's methods (For example, when a method is executed, you can add extra functionality before or after 
+	the method execution).
+	
+	Key Terminologies in AOP:
+	==================
+	a) Aspect -:::- An aspect is a module/class that encapsulates a cross-cutting concern. It contains advice and pointcuts.
+	b) Advice -:::- Advice is the code that runs when a particular pointcut is matched. There are different types of advice, including “before,” “after,” “around,” and “after-throwing.”
+	c) Pointcut -:::- A pointcut is an expression that defines where an aspect’s advice should be applied in the codebase. It selects specific join points in your application.
+	d) JoinPoint -:::- A join point is a specific point in the execution of a program, such as a method call, constructor invocation, or field access.
+	EX--->
+	@Aspect
+	@Component
+	public class CitizenAspect { ---> // This class is aspect.
+
+		@Before(value = "execution(* com.microservices.CitizenService.controller.CitizenController.*(..))") --->// This expression is nothing but a point-cut
+		public void beforeAdvice(JoinPoint joinPoint){
+			System.out.println("Request to " + joinPoint.getSignature() + " started at "+ new Date());
+		}
+
+		@After(value = "execution(* com.microservices.CitizenService.controller.CitizenController.*(..))")
+		public void afterAdvice(JoinPoint joinPoint){
+			System.out.println("Request to " + joinPoint.getSignature() + " ended at "+ new Date());
+		}
+	}
+	Breakdown of the Given Code:
+	=====================
+	Aspect -:::- CitizenAspect is the aspect encapsulating the cross-cutting behavior.
+	Pointcut -:::- The execution(* com.microservices.CitizenService.controller.CitizenController.*(..)) expression defines a pointcut that matches all methods in the CitizenController class.
+	Join Point -:::- The specific method executions in the CitizenController that are matched by the pointcut.
+	Advice -:::- The beforeAdvice method is the advice that is executed before the join points specified by the pointcut. It uses JoinPoint to get information about the current method execution.
+	
+	Different types of advice:
+	==================
+	--- Spring AOP provides several types of advice, each serving a different purpose depending on when the advice is applied relative to the join point.
+	a)  Before Advice:
+	============
+	Definition -:::- This advice executes before the join point (typically a method execution). It allows you to perform actions like validation, logging, or authorization before the target 
+	method is invoked.
+	Annotation -:::- "@Before"
+	
+	b) After (Finally) Advice:
+	================
+	Definition -:::- This advice executes after the join point completes, regardless of whether it was successful or threw an exception. It's useful for cleaning up resources or executing 
+	code that must always run.
+	Annotation: "@After"
+	
+	c) After Returning Advice:
+	=================
+	Definition -:::- This advice executes after the join point completes successfully. It allows you to capture the return value and perform actions based on it.
+	Annotation -:::- "@AfterReturning"
+	Note :
+	====
+	--- If you have three advices in single aspect, then the flow like this  ["@Before" ---> "@AfterReturning" (or) " @AfterThrowing"  ---> "@After"]
+	
+	EX:
+	@Aspect
+	@Component
+	public class CitizenAspect {
+
+		@AfterReturning( value = "execution(* com.microservices.CitizenService.controller.CitizenController.addCitizen(..))", returning = "citizen")
+		public void afterReturningAdviceForAddCitizen(JoinPoint joinPoint, Citizen citizen){
+			System.out.println("Citizen saved successfully with Citizen id: "+citizen.getId());
+		}
+	}
+	
+	d) After Throwing Advice:
+	=================
+	Definition -:::- This advice executes when the join point throws an exception. It allows you to handle exceptions, log errors, or trigger fallback actions.
+	Annotation -:::- "@AfterThrowing"
+	EX:
+	@Aspect
+	public class ExceptionLoggingAspect {
+		@AfterThrowing( value = "execution(* com.microservices.CitizenService.controller.CitizenController.addCitizen(..))", throwing = "exception")
+		public void afterThrowingAdviceForAddCitizen(JoinPoint joinPoint, Exception exception) {
+			System.out.println("Method threw exception: " + exception.getMessage());
+		}
+	}
+
+	e) Around advice:
+	============
+	Definition -:::- The @Around advice in Spring AOP is one of the most powerful and flexible forms of advice, allowing you to "wrap" around a join point (such as a method call) 
+	and control its execution.With @Around, you can perform actions before and after the join point, modify method parameters, capture or change return values, and even decide 
+	whether or not to proceed with the execution.
+	Annotation -:::- "@Around" 
+	Input Arg -:::- An @Around advice takes a ProceedingJoinPoint as a parameter, which represents the join point where the advice is applied. This object provides control over the 
+	method's execution, allowing you to decide if and when to proceed with the target method.
+	
+	Control Flow with ProceedingJoinPoint:
+	============================
+	The ProceedingJoinPoint gives you control over the method's execution. You can:
+	a) Proceed with Execution -:::- By calling proceed(), you allow the target method to execute.
+	b) Modify Parameters -:::- You can modify the parameters passed to the target method before calling proceed().
+	c) Handle Exceptions -:::- If the target method throws an exception, you can catch it, handle it, or rethrow it.
+	d) Modify Return Values -:::- After calling proceed(), you can modify the returned result before passing it back to the caller.
+	
+	Points to remember:
+	==============
+	1) First point to remember is you must and should use this "joinPoint.proceed()" then only your specified method(like controller/service method) execution happens else the 
+	methods doesn't execute.
+	2) If your @Around advice method return type is void then the return type of the specified method have no use for that(means it doesn't show any output). You must and 
+	should specify the same return type of @Around method same as Specified method.
+	3) We can use "joinPoint.proceed()" many times for different output/different cases.
+	4) If the specified method throws an exception. we can handle here however we want like.
+	
+	EX:
+	----
+	@Aspect
+	@Component
+	public class CitizenAspect {
+		@Around(value = "execution(* com.microservices.CitizenService.controller.CitizenController.addCitizen(..))")
+		public Citizen measureExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
+			Citizen citizen=null;
+			System.out.println("Request to " + joinPoint.getSignature() + " started at "+ new Date()+"Around advice");
+			try{
+				long start = System.currentTimeMillis(); // --->Before logic
+				citizen =(Citizen) joinPoint.proceed(); // ---> Proceed with the method execution
+				long end = System.currentTimeMillis(); // --->After logic
+				System.out.println("Execution time: " + (end - start) + " ms");
+			}catch (Throwable throwable){
+				System.out.println("Specified method is throwing exception"+throwable.getMessage());
+			}
+			System.out.println("Request to " + joinPoint.getSignature() + " ended at "+ new Date()+"Around advice");
+			return citizen;
+		}
+	}
+
+

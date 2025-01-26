@@ -1,0 +1,136 @@
+About Maven:
+=============
+    A. Maven Repository:
+    =====================
+        -- Maven uses repositories to manage dependencies and project artifacts. These repositories can be either local or remote (such as the Central Repository), and they store the JAR files, 
+           libraries, plugins, and other artifacts that Maven projects need.
+           
+           1. Maven Local Repository:
+           ===========================
+               Location:
+               ==========
+                    -- The local repository is a directory on your computer where Maven stores all the project dependencies, plugins, and other project-related artifacts.
+                    -- By default, this repository is located at ${user.home}/.m2/repository (e.g., C:\Users\YourUsername\.m2\repository on Windows or /Users/YourUsername/.m2/repository on macOS/Linux).
+               Purpose:
+               =========
+                    -- When you build a Maven project, Maven will first look for the required dependencies in the local repository.
+                    -- If the dependency is found in the local repository, Maven will use it; otherwise, Maven will download it from a remote repository (like the Central Repository) and store 
+                       it in the local repository for future use.
+               Benefits:
+               ==========
+                   -- Offline Builds: Once the dependencies are downloaded and stored in the local repository, Maven can perform builds without needing an internet connection.
+                   -- Faster Builds: Using a local repository speeds up the build process since Maven doesn't need to download the same dependencies repeatedly.
+    
+               Customizing the Local Repository:
+               ==================================
+                   -- You can change the location of the local repository by modifying the settings.xml file located in the Maven conf directory or in the .m2 directory in your home folder:
+                      <settings>
+                          <localRepository>/path/to/local/repo</localRepository>
+                      </settings>
+                      
+            2. Maven Central Repository:
+            =============================
+                Location:
+                ==========
+                    -- The Central Repository is a remote repository hosted on the internet. It is the default remote repository for Maven and is managed by the Apache Software Foundation.
+                    -- URL: https://repo.maven.apache.org/maven2/
+                Purpose:
+                =========    
+                    -- The Central Repository hosts a vast collection of libraries, plugins, and other artifacts that are commonly used in Maven projects.
+                    -- If a dependency is not found in the local repository, Maven will automatically try to download it from the Central Repository.
+                Benefits:
+                ==========
+                    -- Global Access: The Central Repository is accessible to any Maven user and provides a reliable source of widely-used libraries.
+                    -- Version Management: The repository contains multiple versions of the same artifact, allowing projects to specify the exact version they need.
+                    
+            3. Other Remote Repositories:
+            ==============================
+                -- In addition to the Central Repository, Maven can also use other remote repositories, such as:
+                -- Private/Custom Repositories: Organizations can host their own Maven repositories to store proprietary or custom artifacts that are not available in the Central Repository.
+                -- Third-Party Repositories: Some libraries may be hosted in third-party repositories. You can configure Maven to use these repositories by adding them to your project's pom.xml file:
+                    <repositories>
+                        <repository>
+                            <id>third-party-repo</id>
+                            <url>http://example.com/maven2</url>
+                        </repository>
+                    </repositories>
+                    
+            4. How Maven Resolves Dependencies:
+            ====================================
+                -- Local Repository: Maven first checks the local repository for the required artifact.
+                -- Remote Repositories: If the artifact is not found locally, Maven checks remote repositories (starting with the Central Repository unless others are specified).
+                -- Downloading Artifacts: If the artifact is found in a remote repository, Maven downloads it and stores it in the local repository.
+                -- Project Build: The build process then uses the artifacts from the local repository.
+                
+                
+    B. Multi-module maven:
+    =======================
+        1. Diagram Link(https://www.google.com/imgres?q=multi%20maven%20project&imgurl=https%3A%2F%2Ftechburps-7.s3.ap-south-1.amazonaws.com%2Ftech-blog%2Fmaven-multi-module-project.png&imgrefurl
+           =https%3A%2F%2Fwww.codeburps.com%2Fpost%2Fmulti-module-project-in-maven&docid=NnjtgcBuoau7PM&tbnid=DztZ9HkgZ_ZJGM&vet=12ahUKEwjA9LG5kqKIAxUpUGcHHf4wKSsQM3oECGoQAA..i&w=708&h=570&hcb=2&ved=
+           2ahUKEwjA9LG5kqKIAxUpUGcHHf4wKSsQM3oECGoQAA).
+           
+        2. my-parent-project/
+            │
+            ├── pom.xml                    (Parent Project POM)
+            │
+            ├── module-a/
+            │   ├── pom.xml                (Module A POM)
+            │   └── src/
+            │       └── main/
+            │           └── java/
+            │
+            └── module-b/
+                ├── pom.xml                (Module B POM)
+                └── src/
+                    └── main/
+                        └── java/
+                        
+        3. A multi-module Maven project, often referred to as a multi-maven project, is a project structure that allows you to manage and build multiple related modules or sub-projects under a 
+           single parent project. This approach is useful for large projects where different parts of the application can be developed, tested, and built independently while still being part of 
+           the same overall project.
+           Structure of a Multi-Module Maven Project:
+           ===========================================
+                A typical multi-module Maven project consists of:
+                a. Parent Project (Aggregator):
+                ================================
+                    a. This is the top-level project that contains references to all the sub-modules.
+                    b. It usually contains the pom.xml file that defines common configuration, dependencies, and plugins shared across all modules.
+                    c. It doesn’t produce a final artifact (like a JAR or WAR); instead, it is used to build and manage the entire project structure.
+                b. Modules (Sub-Projects):
+                ===========================
+                    a. These are the actual projects that produce artifacts.
+                    b. Each module has its own pom.xml file and can be built independently or as part of the entire project.
+                    c. Modules can depend on each other.
+                    
+        4. How to Build a Multi-Module Maven Project:
+            a. To build the entire project, you typically navigate to the parent project directory and run: "mvn clean install"
+            b. This command will compile, test, and package all modules in the correct order, based on their dependencies.
+            
+        5. Benefits of a Multi-Module Maven Project:
+            a. Modularity: Allows for separation of concerns, making the project easier to manage and understand.
+            b. Dependency Management: Simplifies the management of dependencies by centralizing them in the parent pom.xml.
+            c. Reusability: Modules can be reused across different projects.
+            d. Efficient Builds: Modules can be built independently, improving build times.
+
+        6. Note: 
+            -- A multi-module Maven project is an effective way to manage large, complex projects by breaking them down into smaller, more manageable modules. 
+            -- By using a parent pom.xml, you can centralize configurations, dependencies, and plugins, making your project more maintainable and scalable.
+            -- If you want to use module-a classes/methods inside module-b, you need to add dependency of module-a in pom.xml(module-b). like,
+               <dependencies>
+                    <dependency>
+                        <groupId>org.example</groupId> 
+                        <artifactId>module-a</artifactId>
+                        <version>1.0-SNAPSHOT</version>
+                    </dependency>
+               </dependencies>    
+
+
+
+
+
+
+
+
+
+
+

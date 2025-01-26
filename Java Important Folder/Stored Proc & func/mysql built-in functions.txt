@@ -1,0 +1,447 @@
+Built-in functions:
+====================
+    -- MySQL provides a wide range of built-in functions that you can use to perform various operations on data. These functions are categorized based on the types of operations they perform. 
+       Here’s an overview of the different types of built-in functions in MySQL:
+           a) String functions
+           b) Numeric functions
+           c) Date & Time functions
+           d) Aggregate functions
+       
+        a) String functions:
+        =====================
+           1. CONCAT(str1, str2, ...): 
+           ============================
+               Description: Concatenates two or more strings into one.
+               Ex:
+               ====
+                   SELECT CONCAT('Hello', ' ', 'World') AS greeting;
+                   -- Output: 'Hello World'                   
+            2. LENGTH(str):
+            ================
+                Description: Returns the length of a string in bytes.
+                Ex:
+                ====
+                    SELECT LENGTH('MySQL') AS length;
+                    -- Output: 5
+                    
+            3. SUBSTRING(str, pos, len):
+            =============================
+                Description: Extracts a substring from the string str, starting at position pos and with a maximum length of len.
+                Ex:
+                ====
+                    SELECT SUBSTRING('MySQL Database', 7, 8) AS substring;
+                    -- Output: 'Database'
+                    
+            4. LOWER(str):
+            ===============
+                Description: Converts all characters in the string to lowercase.
+                Ex:
+                ====
+                    SELECT LOWER('HELLO WORLD') AS lowercase_string;
+                    -- Output: 'hello world'
+                    
+            5. UPPER(str):
+            ===============
+                Description: Converts all characters in the string to uppercase.
+                Ex:
+                ====
+                    SELECT UPPER('hello world') AS uppercase_string;
+                    -- Output: 'HELLO WORLD'
+                    
+            6. TRIM([remstr FROM] str):
+            ============================
+                Description: Removes leading and/or trailing spaces (or other specified characters) from a string.
+                Ex:
+                ====
+                    SELECT TRIM('   MySQL   ') AS trimmed_string;
+                    -- Output: 'MySQL'
+                    
+                Ex2:
+                =====
+                    SELECT TRIM('X' FROM 'XXXMySQLXXX') AS trimmed_string;
+                    -- Output: 'MySQL'
+                    
+            7. REPLACE(str, from_str, to_str):
+            ===================================
+                Description: Replaces all occurrences of from_str in the string with to_str.
+                Ex:
+                ====
+                    SELECT REPLACE('Hello World', 'World', 'MySQL') AS replaced_string;
+                    -- Output: 'Hello MySQL'
+                    
+            8. LPAD(str, len, padstr):
+            ===========================
+                Description: Pads the string on the left side with padstr until it reaches the length len.
+                Ex:
+                ====
+                    SELECT LPAD('MySQL', 10, '*') AS left_padded_string;
+                    -- Output: '*****MySQL'
+                    
+            9. RPAD(str, len, padstr):
+            ===========================
+                Description: Pads the string on the right side with padstr until it reaches the length len.
+                Ex:
+                ====
+                    SELECT RPAD('MySQL', 10, '*') AS right_padded_string;
+                    -- Output: 'MySQL*****'
+                    
+            10. REVERSE(str):
+            ==================
+                Description: Reverses the characters in the string.
+                Ex:
+                ====
+                    SELECT REVERSE('MySQL') AS reversed_string;
+                    -- Output: 'LQSyM'
+                    
+            11. INSTR(str, substr):
+            ========================
+                Description: Returns the leftmost `len` characters from `str`.
+                Ex:
+                ====
+                    SELECT INSTR('MySQL Database', 'SQL') AS position;
+                    -- Output: 3
+                    
+            12. CHAR_LENGTH(str):
+            ======================
+                Description: Returns the number of characters in a string (not the number of bytes, which is what `LENGTH()` returns).
+                Ex:
+                ====
+                    SELECT CHAR_LENGTH('MySQL') AS char_length;
+                    -- Output: 5
+                    
+            13. POSITION(substring IN string):
+            ===================================
+                Description: Returns the position of the first occurrence of `substring` in `string`, similar to `INSTR`.
+                Ex:
+                ====
+                    SELECT POSITION('SQL' IN 'MySQL Database') AS position;
+                    --Output: 3
+                
+            14. CONCAT_WS(separator, str1, str2, ...):
+            ===========================================
+                Description: Concatenates strings with a specified separator.
+                Ex:
+                ====
+                    SELECT CONCAT_WS('-', '2024', '08', '25') AS formatted_date;
+                    -- Output: '2024-08-25'
+                    
+            15. ASCII(str):
+            ================
+                Description: Returns the ASCII value of the first character of `str`.
+                Ex:
+                ====
+                    SELECT ASCII('A') AS ascii_value;
+                    -- Output: 65
+                    
+            16. CHAR(value):
+            =================
+                Description: Converts the integer ASCII value to a character.
+                Ex:
+                ====
+                    SELECT CHAR(65) AS character;
+                    -- Output: 'A'
+                    
+            17. FORMAT(number, decimals):
+            ==============================
+                Description: Formats a number to a string with a specified number of decimal places.
+                Ex:
+                ====
+                    SELECT FORMAT(12345.6789, 2) AS formatted_number;
+                    -- Output: '12,345.68'
+                    
+                    
+        b) Numeric Functions:
+        ======================
+            1) ABS(x):
+            ===========
+                Description: Returns the absolute value of x.
+                
+            2) CEIL(x) or CEILING(x):
+            ==========================
+                Description: Rounds x up to the nearest integer.
+                
+            3) FLOOR(x):
+            =============
+                Description: Rounds x down to the nearest integer.
+                
+            4) ROUND(x, d):
+            ================
+                Description: Rounds x to d decimal places. If d is 0, it rounds to the nearest integer.
+                
+            5) POWER(x, y) or POW(x, y):
+            =============================
+                Description: Returns x raised to the power of y.
+                
+            6) SQRT(x):
+            ============
+                Description: Returns the square root of x.
+                
+            7) MOD(x, y):
+            ==============
+                Description: Returns the remainder of x divided by y.
+                
+            8) TRUNCATE(x, d):
+            ===================
+                Description: Truncates x to d decimal places without rounding.
+                
+                
+        c) Date & Time functions:
+        ==========================
+            1) CURDATE():
+            ==============
+                Description: Returns the current date in YYYY-MM-DD format.
+                Ex:
+                ====
+                    SELECT CURDATE() AS current_date;
+                    -- Output: '2024-08-25' (depends on the current date)
+                    
+            2) CURTIME():
+            ==============
+                Description: Returns the current time in HH:MM:SS format.
+                
+            3) NOW():
+            ==========
+                Description: Returns the current date and time in YYYY-MM-DD HH:MM:SS format.
+                
+            4) DATE():
+            ===========
+                Description: Extracts the date part of a date or datetime expression.
+                Ex:
+                ====
+                    SELECT DATE('2024-08-25 14:35:10') AS date_part;
+                    -- Output: '2024-08-25'
+
+            5) TIME():
+            ===========
+                Description: Extracts the time part of a date or datetime expression.
+                Ex:
+                ====
+                    SELECT TIME('2024-08-25 14:35:10') AS time_part;
+                    -- Output: '14:35:10'
+
+            6) YEAR():
+            ===========
+                Description: Returns the year from a date.
+                Ex:
+                ====
+                    SELECT YEAR('2024-08-25') AS year_part;
+                    -- Output: 2024
+                
+            7) MONTH():
+            ============
+                Description: Returns the month from a date as a number (1-12).
+                Ex:
+                ====
+                    SELECT MONTH('2024-08-25') AS month_part;
+                    -- Output: 8
+                
+            8) DAY() or DAYOFMONTH():
+            ==========================
+                Description: Returns the day of the month from a date.
+                Ex:
+                ====
+                    SELECT DAY('2024-08-25') AS day_part;
+                    -- Output: 25
+                
+            9) HOUR():
+            ===========
+                Description: Returns the hour from a time or datetime expression.
+                Ex:
+                ====
+                    SELECT HOUR('14:35:10') AS hour_part;
+                    -- Output: 14
+                
+            10) MINUTE():
+            ==============
+                Ex:
+                ====
+                    SELECT MINUTE('14:35:10') AS minute_part;
+                    -- Output: 35
+
+            11) SECOND():
+            ==============
+                Ex:
+                ====
+                    SELECT SECOND('14:35:10') AS second_part;
+                    -- Output: 10
+                    
+                    
+        d) Aggregate Functions:
+        ========================
+            1) COUNT():
+            ============
+                Description: Returns the number of rows that match a specified condition.
+                Ex:
+                ====
+                    SELECT COUNT(*) AS total_rows FROM employees;
+                    -- Output: The total number of rows in the 'employees' table.
+
+                    SELECT COUNT(department_id) AS department_count FROM employees WHERE department_id IS NOT NULL;
+                    -- Output: The number of employees who are assigned to a department.
+                    
+            2) SUM():
+            ==========
+                Description: Returns the sum of a numeric column.
+                Ex:
+                ====
+                    SELECT SUM(salary) AS total_salary FROM employees;
+                    -- Output: The total sum of all employees' salaries.
+
+                    SELECT SUM(quantity * price) AS total_sales FROM sales;
+                    -- Output: The total sales value.
+                    
+            3) AVG():
+            ==========
+                Description: Returns the average value of a numeric column.
+                Ex:
+                ====
+                    SELECT AVG(salary) AS average_salary FROM employees;
+                    -- Output: The average salary of all employees.
+
+                    SELECT AVG(score) AS average_score FROM student_scores;
+                    -- Output: The average score of students.
+                    
+            4) MIN():
+            ==========
+                Description: Returns the minimum value in a column.
+                Ex:
+                ====
+                    SELECT MIN(salary) AS minimum_salary FROM employees;
+                    -- Output: The minimum salary of all employees.
+
+                    SELECT MIN(hire_date) AS earliest_hire_date FROM employees;
+                    -- Output: The earliest hire date of any employee.
+                    
+            5) MAX():
+            ==========
+                Description: Returns the maximum value in a column.
+                Ex:
+                ====
+                    SELECT MAX(salary) AS maximum_salary FROM employees;
+                    -- Output: The maximum salary of all employees.
+
+                    SELECT MAX(hire_date) AS latest_hire_date FROM employees;
+                    -- Output: The latest hire date of any employee.
+                    
+            6) GROUP_CONCAT():
+            ===================
+                Description: Returns a concatenated string of non-NULL values from a group.
+                Ex:
+                ====
+                    SELECT GROUP_CONCAT(employee_name) AS employee_names FROM employees;
+                    -- Output: 'Sai,Venkat,Chandu,Mahesh,Dilip,Bharath,Sujith,Ravi,Shiva,Dhanu'
+
+                    SELECT department_id, GROUP_CONCAT(employee_name ORDER BY employee_name ASC) AS employee_names FROM employees GROUP BY department_id;
+                    -- Output: 102	Dilip,Mahesh,Sujith
+                               103	Bharath,Dhanu,Sai,Venkat
+                               104	Ravi
+                               105	Shiva
+                               110	Chandu.
+                    
+            7) VARIANCE():
+            ===============
+                Description: Returns the variance of a set of values.
+                Ex:
+                ====
+                    SELECT VARIANCE(salary) AS salary_variance FROM employees;
+                    -- Output: The variance of employees' salaries.
+                    
+           
+        e) others:
+        ===========
+            1) FIELD(value, value1, value2, value3, ...):
+            ==============================================
+                The FIELD() function in MySQL is used to return the index position of a value within a list of values. It can be thought of as a way to find the ordinal position of a given value 
+                in a list.
+                -- FIELD() returns the index (1-based) of the first occurrence of value in the list.
+                -- If value is not found in the list, FIELD() returns 0.
+                -- If value is NULL, FIELD() returns NULL.
+                
+                Ex:
+                ====
+                    SELECT FIELD('apple', 'banana', 'apple', 'orange', 'grape') AS position;
+                    -- Output: 2 (since 'apple' is the second value in the list)
+                    
+            2) FIND_IN_SET(string_to_find, string_list):
+            =============================================
+                The FIND_IN_SET() function in MySQL is used to return the position of a string within a comma-separated list of strings. It is often used to determine the index of a particular 
+                value in a list of values stored in a single column.
+                -- FIND_IN_SET() returns the position (1-based index) of string_to_find in string_list.
+                -- If string_to_find is not found, it returns 0.
+                -- If any of the arguments are NULL, it returns NULL.
+                
+                Ex:
+                ====
+                    SELECT FIND_IN_SET('apple', 'banana,apple,orange,grape') AS position;
+                    -- Output: 2 (since 'apple' is the second value in the list)
+                    
+                Ex2:
+                =====
+                    SELECT * FROM employees WHERE FIND_IN_SET('HR', department_list) > 0;
+                    -- Output: Returns rows where 'HR' is found in the 'department_list' column, which contains comma-separated department names.
+                    
+                    
+
+                
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
+                
+  
+
+
+
+
+
+
+
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+
+                    
+        

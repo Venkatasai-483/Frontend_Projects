@@ -1,0 +1,299 @@
+Coding Interview Questions:
+=============================
+
+1. Write a code to print duplicate words in a sentence...?
+============================================================
+
+==========
+Method1:-
+==========
+    String inputData = "web application is dynamic extension of a web or application server";
+    String[] strArray = inputData.split(" ");
+    Map<String, Integer> wordCount = new HashMap<>();
+    for (String word : strArray) {
+        if (wordCount.containsKey(word)) {
+            wordCount.put(word, wordCount.get(word) + 1);
+        } else {
+            wordCount.put(word, 1);
+        }
+    }
+    // Using the streams
+    wordCount.entrySet().stream().filter(entry->entry.getValue()>1).forEach(System.out::println);
+
+    // Using for-each
+    for (Map.Entry<String, Integer> map : wordCount.entrySet()) {
+        if (map.getValue() > 1) {
+            System.out.println(map.getKey()+" : "+map.getValue());
+        }
+    }
+
+=========
+Method2:
+=========
+    String inputData = "web application is dynamic extension of a web or application server";
+    String[] strArray = inputData.split(" ");
+    Map<String, Long> wordCount = Arrays.stream(strArray)
+            .collect(Collectors.groupingBy(word->word,Collectors.counting()));
+    // Directly printing using for-each
+    wordCount.entrySet().stream().filter(entry->entry.getValue()>1).forEach(System.out::println);
+
+    // Stored in Map
+    Map<String, Long> duplicateWords = wordCount.entrySet().stream().filter(entry->entry.getValue()>1)
+        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    System.out.println(duplicateWords);
+    
+
+2. Write a code to print duplicate elements in an array...?
+=============================================================
+    Integer[] arr = {2,5,3,9,6,3,4,9};
+    Map<Integer, Integer> countMap = new HashMap<>();
+    // Using Streams
+    Arrays.stream(arr).collect(Collectors.groupingBy(val->val,Collectors.counting()))
+            .entrySet().stream().filter(entry->entry.getValue()>1)
+            .forEach(entry-> System.out.println("Value: "+entry.getKey()+" --> "+"Count: "+entry.getValue()));
+
+    // Using Map
+    for(int val : arr){
+        countMap.put(val,countMap.getOrDefault(val,0)+1);
+    }
+    System.out.println(countMap);
+
+
+3. prints the missing characters not present in the input string:
+===================================================================
+public class MissingChars {
+    public static void main(String[] args) {
+        String input = "The quick brown fox jumps over the lazy dog";
+        boolean[] missingChars = missingCharacters(input,input.length());
+        for (int i=0;i<missingChars.length;i++){
+            if(!missingChars[i]) System.out.print((char)(97+i)+" ");
+        }
+    }
+
+    public static boolean[] missingCharacters(String input, int len){
+        boolean[] charArr = new boolean[26];
+        for(char ch : input.toLowerCase().toCharArray()){
+            if(ch>='a' && ch<='z'){
+                charArr[ch-'a'] = true;
+            }
+        }
+        return  charArr;
+    }
+}
+
+4. Given a string s containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.
+============================================================================================================================
+An input string is valid if:
+1. Open brackets must be closed by the same type of brackets.
+2. Open brackets must be closed in the correct order.
+3. Every close bracket has a corresponding open bracket of the same type.
+
+Input: s = "()[]{}"
+Output: true
+
+Input: s = "({[]})"
+Output: true
+
+Input: s = "({[}])"
+Output: false
+
+Ans:
+====
+package src.basic;
+
+import java.util.Scanner;
+import java.util.Stack;
+
+public class ValidParentheses {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        String parentheses = sc.nextLine();
+        System.out.println(isValidParentheses(parentheses));
+    }
+
+    public static boolean isValidParentheses(String parentheses){
+        Stack<Character> stack = new Stack<>();
+        for(char ch : parentheses.toCharArray()){
+            if(ch == '('){
+                stack.push(')');
+            } else if(ch == '[') {
+                stack.push(']');
+            } else if (ch == '{') {
+                stack.push('}');
+            }else if(stack.isEmpty() || stack.pop() != ch){
+                return false;
+            }
+        }
+        return stack.isEmpty();
+    }
+}
+
+5. Find second largest value..?
+================================
+public class SecondLargest {
+    public static void main(String[] args) {
+        Optional<Integer> secondLargest = Stream.of(9,13,56,78,12,78,37).distinct()
+                .sorted(Comparator.reverseOrder()).skip(1).findFirst();
+        secondLargest.ifPresent(System.out::println);
+    }
+}
+----------> Or
+public class SecondLargest {
+    public static void main(String[] args) {
+        String secondLargest = Stream.of(9,9).distinct()
+                .sorted(Comparator.reverseOrder()).skip(1)
+                .map(String::valueOf)
+                .findFirst()
+                .orElse("Second largest element does not exist");
+        System.out.println(secondLargest);
+    }
+}
+
+6. Group the employees by job location...?
+============================================
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+public class Interview1 {
+    public static void main(String[] args) {
+        Map<String, List<Employee>> employeeLocation = Stream.of(new Employee("sai","Bangalore","Java Dev"),
+                new Employee("venkat","Bangalore","Python Dev"),
+                new Employee("shiva","Hyderabad","Cloud"),
+                new Employee("ram","Chennai","Java Dev")
+                ).collect(Collectors.groupingBy(Employee::getLocation));
+
+        System.out.println(employeeLocation);
+    }
+}
+
+class Employee{
+    private String name;
+    private String location;
+    private String role;
+
+    public Employee(String name, String location, String role) {
+        this.name = name;
+        this.location = location;
+        this.role = role;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    @Override
+    public String toString() {
+        return "Employee{" +
+                "name='" + name + '\'' +
+                ", location='" + location + '\'' +
+                ", role='" + role + '\'' +
+                '}';
+    }
+}
+
+
+5. Sort Employees by job location..?
+=====================================
+package interview;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+public class Interview1 {
+    public static void main(String[] args) {
+        List<Employee> employees = Stream.of(new Employee("sai","Bangalore","Java Dev"),
+                new Employee("venkat","Bangalore","Python Dev"),
+                new Employee("shiva","Hyderabad","Cloud"),
+                new Employee("ram","Chennai","Java Dev")
+                ).sorted(Comparator.comparing(Employee::getLocation).reversed()).toList();
+
+        System.out.println(employees);
+    }
+}
+
+class Employee{
+    private String name;
+    private String location;
+    private String role;
+
+    public Employee(String name, String location, String role) {
+        this.name = name;
+        this.location = location;
+        this.role = role;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    @Override
+    public String toString() {
+        return "Employee{" +
+                "name='" + name + '\'' +
+                ", location='" + location + '\'' +
+                ", role='" + role + '\'' +
+                '}';
+    }
+}
+
+
+
+6. Print star pyramid in java....?
+====================================
+    *
+   * *
+  * * *
+ * * * *
+* * * * *
+ANS:
+int n=10;
+for(int i=0;i<n;i++){
+	for(int j=i;j<n-1;j++){
+		sout(" ");
+	}
+	for(int j=0;j<=i;j++){
+	sout("* ");
+	}
+}
+
+
+7. print star reverse pyramid...?
+=====================================
+* * * * *
+ * * * *
+  * * *
+   * *
+    *
+ANS:
+int n=10;
+for(int i=n;i>0;i++){
+	for(int j=i;j<n;j++){
+		sout(" ");
+	}
+	for(int j=i;j>0;j++){
+	sout("* ");
+	}
+}
+
+

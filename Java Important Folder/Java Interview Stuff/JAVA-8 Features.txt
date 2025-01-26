@@ -1,0 +1,844 @@
+List of Java8 features:
+========================
+    1. Lambda Expressions
+    2. Functional Interfaces
+    3. Method References
+    4. Stream API
+    5. Optional Class
+    6. Default Methods in Interfaces
+    7. Static Methods in Interfaces
+    8. Built-in Functional Interfaces
+    9. java.time Package (Date and Time API)
+    10. Collectors Class
+    11. ForEach() method in Iterable Interface
+    12. Nashorn JavaScript Engine
+    
+1. Lambda Expressions:
+=======================
+    -- Lambda expression is an anonymous function[without name] where it provides a clear and concise way to represent a method of the functional interface using an expression.
+    -- Lambda expression basically is an instance of the functional interface. It improves code readability and reducing boilerplate code, especially for cases involving anonymous inner classes in Java.
+    -- They can be treated as a function that you can pass as a parameter or assign to a variable. 
+    -- Lambda expression in java are executed on demand (it doesn't get executed immediately) typically when it's passed as an argument to a method (or) stored in a variable.
+    
+    1. Syntax of Lambda Expressions:
+    =================================
+        -- The basic syntax of a lambda expression is:
+            -- (parameters) -> expression
+        -- if the body requires multiple lines, we can use:
+            -- (parameters) -> { statements; }
+        -- When there is a single statement curly brackets are not mandatory and the return type of the anonymous function is the same as that of the body expression.
+        -- Without curly braces we can't use return keyword. compiler will consider returned value automatically.
+        -- Within curly braces if we want to return some value compulsory we should use return statement.
+        
+    2. Advantages of Lambda Expressions:
+    =====================================
+        1. Simplified Code: Lambdas allow for a more concise syntax compared to anonymous inner classes.
+        2. Readability: By reducing boilerplate code, lambdas make the code more readable and maintainable.
+        3. Encourages Functional Programming: Lambda expressions allow Java developers to write in a more functional style, making it easier to work with collections and streams.
+        
+    3. Basic Example of a Lambda Expression:
+    =========================================
+        -- Consider an example where we want to sort a list of strings using Comparator:
+        Ex:
+        ====
+            List<String> names = Arrays.asList("Alice", "Bob", "Charlie");
+
+            // Traditional Comparator
+            Collections.sort(names, new Comparator<String>() {
+                @Override
+                public int compare(String s1, String s2) {
+                    return s1.compareTo(s2);
+                }
+            });
+
+            // Using Lambda Expression
+            Collections.sort(names, (s1, s2) -> s1.compareTo(s2));
+            
+        -- In the above example, the lambda (s1, s2) -> s1.compareTo(s2) simplifies the code by directly representing the comparison logic without needing a separate Comparator class or 
+           an anonymous inner class.
+           
+    4. Best Practices with Lambda Expressions:
+    ===========================================
+        1. Use for short logic: Keep lambdas concise and avoid complex logic that reduces readability.
+        2. Functional Interfaces: Always use functional interfaces with lambda expressions, either custom or standard ones in java.util.function.
+        3. Avoid Side Effects: Aim to make lambda expressions pure functions, where they return values without altering variables outside the lambda scope.
+        4. Use Method References: Use method references for better readability when possible.
+        
+        
+2. Functional Interface:
+=========================
+    -- Functional Interfaces are a cornerstone of functional programming in Java, introduced in Java 8 to support lambda expressions and method references. A functional interface is an interface 
+       that has exactly one abstract method, also known as a Single Abstract Method (SAM). This makes them ideal for defining the target type for lambda expressions.
+       
+    1. What is a Functional Interface:
+    ===================================
+        -- A functional interface is an interface that:
+           1. Contains only one abstract method.
+           2. Can have any number of default or static methods.
+           3. Can be implemented by a lambda expression, method reference, or an anonymous inner class.
+           4. Types of Functional Interfaces: Predicate, Function, Consumer, Supplier, etc.
+            
+        -- To ensure an interface qualifies as a functional interface, it can be annotated with @FunctionalInterface. This annotation is optional but helps avoid errors, as it ensures that the 
+           interface adheres to the rules of a functional interface.
+           
+    2. Inheritance:
+    ================
+        -- If a functional interface extends another interface, it inherits the abstract methods.
+        -- The resulting interface is still functional if it only has one abstract method in total.
+        
+    3. @FunctionalInterface Annotation:
+    ====================================
+        -- Ensures that the interface has exactly one abstract method.
+        -- Compiler will throw an error if the interface violates the functional interface rules.
+        -- Adding this annotation is optional but recommended for clarity.
+        
+    4. Custom Functional Interface Example:
+    ========================================
+        -- You can create your own functional interfaces tailored to your needs:
+        Example:
+        =========
+            @FunctionalInterface
+            interface StringProcessor {
+                String process(String input);
+            }
+            
+        Using it:
+        ==========
+            StringProcessor toUpperCase = input -> input.toUpperCase();
+            System.out.println(toUpperCase.process("hello")); // Output: HELLO
+            
+    5.  Advantages of Functional Interfaces:
+    =========================================
+        1. Enables Functional Programming: Functional interfaces enable a functional programming paradigm in Java.
+        2. Concise Code: Replacing verbose anonymous classes with compact lambda expressions.
+        3. Better Readability: Simplifies the intent and reduces boilerplate code.
+        4. Flexibility: Works seamlessly with lambda expressions and method references for versatile use.
+        
+    6. Built-in Java Functional Interfaces:
+    ========================================
+        -- For common cases, Java provides predefined functional interfaces. The functional interface gets converted into many interfaces. 
+           1. Runnable - 
+                  It only contains the run() method. This allows you to write applications that can run on separate threads.
+           2. Comparable - 
+                  There is only one method in this interface, compareTo(). Classes implementing the Comparable interface can compare and sort their objects.
+           3. ActionListener - 
+                  There is only one method in it, actionPerformed(). This component handles all the action events like mouse clicks on components.
+           4. Callable - 
+                  In this class, there is only one method called call(). Using this method, you can monitor the progress of a thread's execution of a function.
+
+
+3. Method References:
+======================
+    -- Method references are a shorthand syntax in Java 8 that allows you to refer to methods or constructors by their names. They simplify the code by removing the boilerplate of lambda 
+       expressions, making the code cleaner and easier to read.
+       
+    1. Key Types of Method References:
+    ===================================
+        a. Static Method Reference:
+        ============================
+            Syntax: ClassName::staticMethodName
+            Example: 
+            =========
+                List<Integer> numbers = Arrays.asList(1, 2, 3);
+                numbers.forEach(System.out::println); // Refers to System.out.println
+                
+        b. Instance Method Reference of a Particular Object:
+        =====================================================
+            Syntax: instance::instanceMethodName
+            Example:
+            =========
+                String str = "Hello, World!";
+                Supplier<String> supplier = str::toUpperCase; // Refers to toUpperCase() on str
+                System.out.println(supplier.get());
+                
+        c. Instance Method Reference of an Arbitrary Object of a Class:
+        ================================================================
+            Syntax: ClassName::instanceMethodName
+            Example:
+            =========
+                List<String> names = Arrays.asList("Alice", "Bob", "Charlie");
+                names.sort(String::compareToIgnoreCase); // Refers to compareToIgnoreCase() for each string
+                
+        d. Constructor Reference:
+        ==========================
+            --> A constructor method reference in Java refers to using a constructor as a method reference, allowing you to create new instances of a class within functional programming constructs 
+               (like streams). It serves as a shorthand for lambda expressions that instantiate objects.
+            Syntax: ClassName::new
+            Example:
+            =========
+                Supplier<List<String>> listSupplier = ArrayList::new; // Refers to ArrayList constructor
+                List<String> list = listSupplier.get();
+                
+    2. Benefits of Method References:
+    ==================================
+        1. Improved Readability: They are more concise than equivalent lambda expressions.
+        2. Code Reusability: Reuse existing methods without redefining logic.
+        3. Functional Programming Style: Fits well in a functional programming paradigm introduced in Java 8.
+        
+    3. Use Cases:
+    ==============
+        1. Iterating over collections (forEach)
+        2. Sorting collections (sort)
+        3. Stream operations (map, filter, etc.)
+        4. Creating new instances (constructor references)
+        
+        
+
+5. Optional Class:
+===================
+    -- Optional is a container object that can either contain a non-null value or represent the absence of a value. It provides methods to handle values more safely without explicit null checks.
+       -- Key Characteristics:
+          1. It is a final class in java.util package.
+          2. Contains at most one value.
+          3. Prevents NullPointerExceptions by forcing you to explicitly handle the presence or absence of values.
+    
+    1. Why Optional was Introduced?
+    ================================
+        -- Before Java 8, dealing with null values was cumbersome. Checking for null and handling exceptions manually led to verbose code, increasing the risk of runtime errors.
+        a. Common Problem:
+        ===================
+            String name = getName(); // Might return null
+            if (name != null) {
+                System.out.println(name.length());
+            } else {
+                System.out.println("Name is null");
+            }
+            
+        b. With Optional:
+        ==================
+            Optional<String> name = getName();
+            name.ifPresent(n -> System.out.println(n.length()));
+            
+    2. Creating Optional Objects:
+    ==============================
+        -- You can create an Optional object in several ways:
+        a. Using Optional.of():
+        ========================
+            -- Creates an Optional with a non-null value. Throws NullPointerException if the value is null.
+            Ex:
+            ====
+                Optional<String> optional = Optional.of("Hello");
+                System.out.println(optional); // Optional[Hello]
+                
+        b. Using Optional.ofNullable():
+        ================================
+            -- Creates an Optional object that may hold a null value.
+            Ex:
+            ====
+                Optional<String> optional = Optional.ofNullable(getName());
+                System.out.println(optional); // Optional.empty if getName() returns null
+                
+        c. Using Optional.empty():
+        ===========================
+            -- Creates an empty Optional instance. 
+            Ex:
+            ====
+                Optional<String> emptyOptional = Optional.empty();
+                System.out.println(emptyOptional); // Optional.empty
+                
+    3. Methods in the Optional Class:
+    ==================================
+        -- Optional provides several methods to safely interact with its value:
+        a. isPresent():
+        ================
+            -- Checks whether a value is present or not.
+            Ex:
+            ==== 
+                Optional<String> name = Optional.of("Alice");
+                if (name.isPresent()) {
+                    System.out.println(name.get());
+                }
+
+        b. ifPresent():
+        ================
+            -- Executes a provided lambda expression if the value is present.
+            Ex:
+            ====
+                Optional<String> name = Optional.ofNullable(null);
+                name.ifPresent(n -> System.out.println(n.length())); // Does nothing if empty
+                
+        c. get():
+        ==========
+            -- Returns the value if present; throws NoSuchElementException if the value is not present.
+            Ex:
+            ====
+                Optional<String> name = Optional.of("Bob");
+                System.out.println(name.get()); // Output: Bob
+                
+        d. orElse():
+        =============
+            -- Returns the value if present; otherwise, returns a default value.
+            Ex:
+            ====
+                Optional<String> name = Optional.ofNullable(null);
+                System.out.println(name.orElse("Default Name")); // Output: Default Name
+                
+        e. orElseGet():
+        ================
+            -- Similar to orElse(), but takes a Supplier function to generate the default value.
+            Ex:
+            ====
+                Optional<String> name = Optional.ofNullable(null);
+                System.out.println(name.orElseGet(() -> "Generated Default")); // Generated Default
+                
+        f. orElseThrow():
+        ==================
+            -- Throws an exception if the value is not present.
+            Ex:
+            ====
+                Optional<String> name = Optional.ofNullable(null);
+                name.orElseThrow(() -> new RuntimeException("Value is absent"));
+                
+        g. filter():
+        =============
+            -- Filters the value based on a condition.
+            Ex:
+            ====
+                Optional<String> name = Optional.of("Charlie");
+                name.filter(n -> n.length() > 5).ifPresent(System.out::println); // Output: Charlie
+                
+        h. map():
+        ==========
+            -- Transforms the value if present.
+            Ex:
+            ====
+                Optional<String> name = Optional.of("Alice");
+                Optional<Integer> length = name.map(String::length);
+                length.ifPresent(System.out::println); // Output: 5
+                
+    4. Handling NullPointerException with Optional:
+    ================================================
+        1. Traditional Approach:
+        =========================
+            public String getUserName(User user) {
+                if (user != null) {
+                    return user.getName();
+                }
+                return "Unknown";
+            }
+            
+        2. Using Optional:
+        ===================
+            public String getUserName(User user) {
+                return Optional.ofNullable(user)
+                               .map(User::getName)
+                               .orElse("Unknown");
+            }
+            
+        -- This approach is safer and cleaner, avoiding multiple null checks.
+        
+    5. Chaining with Optional:
+    ===========================
+        -- You can chain multiple Optional methods to perform complex transformations safely.
+        Ex:
+        ====
+            Optional<String> result = Optional.of("  Alice  ")
+                                              .map(String::trim)
+                                              .filter(name -> name.length() > 3)
+                                              .map(String::toUpperCase);
+
+            result.ifPresent(System.out::println); // Output: ALICE
+            
+    6. Best Practices with Optional:
+    =================================
+        a. Avoid Using get() Directly:
+           -- It can throw NoSuchElementException if the value is absent.
+           -- Use safer alternatives like orElse() or ifPresent().
+        b. Prefer Optional for Return Types:
+           -- Don't use Optional for method parameters or class fields; it's designed for return types.
+        c. Don't Use with Collections:
+           -- Avoid Optional<List<T>>; use an empty list instead of an empty Optional.
+        d. Don't Overuse:
+           -- Use Optional for cases where a value might be absent. For mandatory values, stick to normal objects.
+
+
+6. Default and Static methods in Interface:
+=============================================
+    a. Default Methods: Reasons for Introduction:
+    ==============================================
+        Default methods were introduced primarily to address interface evolution challenges and enhance code flexibility.
+        
+        Reason 1: Backward Compatibility Without Breaking Existing Code:
+        =================================================================
+            -- Before Java 8, adding a new method to an interface was problematic:
+               -- All implementing classes had to implement the new method.
+               -- This created a binary compatibility issue for existing codebases when a library updated an interface.
+            -- How Default Methods Solve This:
+               -- You can add a method to an interface with a default implementation.
+               -- Existing implementations will continue to work without any modifications, as they inherit the default implementation.
+               
+            Example Without Default Methods (Pre-Java 8):
+            ==============================================
+                public interface Vehicle {
+                    void start(); // Existing method
+                }
+
+                // Existing implementations
+                public class Car implements Vehicle {
+                    public void start() {
+                        System.out.println("Car starting...");
+                    }
+                }
+
+                public class Bike implements Vehicle {
+                    public void start() {
+                        System.out.println("Bike starting...");
+                    }
+                }
+
+                // Adding a new method (Pre-Java 8)
+                public interface Vehicle {
+                    void start();
+                    void stop(); // New method
+                }
+
+                // All implementations MUST implement the new method, breaking the code.
+                
+        
+            Example With Default Methods (Java 8):
+            =======================================
+                public interface Vehicle {
+                    void start(); // Existing method
+
+                    // New method with a default implementation
+                    default void stop() {
+                        System.out.println("Vehicle stopping...");
+                    }
+                }
+                
+                // Existing implementations (e.g., Car, Bike) will inherit the default stop() implementation and work without changes.
+                
+        Reason 2: Reduce Code Duplication:
+        ===================================
+            -- Without default methods:
+               -- If multiple classes implement the same interface, each class needs to implement common methods, leading to duplicate code.
+            -- With default methods:
+               -- Common functionality can be directly provided in the interface, avoiding redundancy.
+               
+            Example:
+            =========
+                public interface Logger {
+                    default void log(String message) {
+                        System.out.println("Log: " + message);
+                    }
+                }
+
+                public class ApplicationLogger implements Logger {
+                    // Can use or override the default implementation
+                }
+                
+        Reason 3: Enable Functional Programming:
+        =========================================
+            -- Default methods allow interfaces to evolve into functional interfaces:
+               -- Functional interfaces are the backbone of Java 8's lambda expressions and streams.
+               -- Many functional interfaces, like Predicate, Consumer, and Comparator, include default methods to provide flexible operations.
+               
+               
+        Reason 4: Solve the Diamond Problem in Multiple Inheritance:
+        =============================================================
+            -- Java doesn’t allow multiple inheritance to avoid the diamond problem, where a class inherits conflicting methods from multiple parents.
+            -- Default methods clarify the behavior:
+               -- If two interfaces provide the same default method, the implementing class must override it, explicitly resolving the conflict.
+               
+            Example:
+            =========
+                interface A {
+                    default void display() {
+                        System.out.println("Display from A");
+                    }
+                }
+
+                interface B {
+                    default void display() {
+                        System.out.println("Display from B");
+                    }
+                }
+
+                class C implements A, B {
+                    @Override
+                    public void display() {
+                        A.super.display(); // Explicitly choosing A's implementation
+                    }
+                }
+                
+    b.  Static Methods: Reasons for Introduction:
+    ==============================================
+        -- Static methods were introduced in interfaces to provide utility and helper methods directly related to the interface.
+        
+        Reason 1: Avoid Utility Classes:
+        =================================
+            -- Before Java 8:
+               -- Common utilities (e.g., Collections, Arrays) were implemented as standalone classes with static methods.
+               -- This approach:
+                  -- Polluted the class space.
+                  -- Made it harder to organize related logic.
+            -- With static methods in interfaces:
+               -- Utility methods can be logically grouped within the related interface, improving modularity and discoverability.
+               
+            Example:
+            =========
+                public interface MathOperations {
+                    static int add(int a, int b) {
+                        return a + b;
+                    }
+
+                    static int subtract(int a, int b) {
+                        return a - b;
+                    }
+                }
+
+                // Usage
+                int result = MathOperations.add(5, 3);
+                
+        Reason 2: Provide Utility Without Tying to Instances:
+        ======================================================
+            -- Static methods:
+               -- Do not depend on instances, so they are ideal for independent utility functions.
+               -- By placing them in interfaces, you keep them logically tied to the interface's purpose.
+               
+               
+7. Built-in Functional Interfaces:
+===================================
+    -- Java 8 provides several built-in functional interfaces in the java.util.function package. These are grouped based on their use cases:
+    
+    A. Predicate:
+    ==============
+        -- A Predicate represents a function that takes one argument and returns a boolean result. It is commonly used for filtering or matching.
+        
+        Key Methods:
+        =============
+            -- boolean test(T t)
+            -- Default methods: and, or, negate
+            
+        Example:
+        =========
+            Predicate<Integer> isEven = number -> number % 2 == 0;
+            System.out.println(isEven.test(4)); // true
+            System.out.println(isEven.test(5)); // false
+            
+    B. Consumer:
+    =============
+        -- A Consumer represents a function that accepts one argument and performs an operation on it, but does not return a result.
+        
+        Key Methods:
+        =============
+            -- void accept(T t)
+            -- Default method: andThen
+            
+        Example:
+        =========
+            Consumer<String> print = message -> System.out.println(message);
+            print.accept("Hello, World!"); // Outputs: Hello, World!
+            
+    C. Supplier:
+    =============
+        -- A Supplier represents a function that takes no arguments and returns a result. It is used for supplying values (e.g., lazy evaluation).
+        
+        Key Method:
+        ============
+            -- T get()
+            
+        Example:
+        =========
+            Supplier<Double> randomValue = () -> Math.random();
+            System.out.println(randomValue.get()); // Random number
+            
+    D. Function:
+    =============
+        -- A Function represents a function that takes one argument and produces a result. It is used for mapping or transformation.
+
+        Key Methods:
+        =============
+            -- R apply(T t)
+            -- Default methods: andThen, compose
+            
+        Example:
+        =========
+            Function<Integer, String> intToString = number -> "Number: " + number;
+            System.out.println(intToString.apply(5)); // Outputs: Number: 5
+            
+    E. BiFunction:
+    ===============
+        -- A BiFunction represents a function that takes two arguments and produces a result. It is a two-argument extension of the Function interface.
+
+        Key Method:
+        ============
+            -- R apply(T t, U u)
+
+        Example:
+        =========
+            BiFunction<Integer, Integer, Integer> add = (a, b) -> a + b;
+            System.out.println(add.apply(10, 20)); // Outputs: 30
+            
+    F. UnaryOperator:
+    ==================
+        -- A UnaryOperator is a special case of Function where the input and output types are the same.
+
+        Key Method:
+        ============
+            -- Inherits apply from Function
+            
+        Example:
+        =========
+            UnaryOperator<Integer> square = number -> number * number;
+            System.out.println(square.apply(4)); // Outputs: 16
+            
+    G. BinaryOperator:
+    ===================
+        -- A BinaryOperator is a special case of BiFunction where the input and output types are the same.
+
+        Key Method:
+        ============
+            -- Inherits apply from BiFunction
+        
+        Example:
+        =========
+            BinaryOperator<Integer> multiply = (a, b) -> a * b;
+            System.out.println(multiply.apply(3, 5)); // Outputs: 15
+            
+    H. BiConsumer:
+    ===============
+        -- A BiConsumer represents a function that accepts two arguments and performs an operation on them without returning a result.
+
+        Key Method:
+        ============
+            -- void accept(T t, U u)
+        
+        Example:
+        =========
+            BiConsumer<String, Integer> printPerson = (name, age) -> 
+            System.out.println(name + " is " + age + " years old.");
+            printPerson.accept("Alice", 30); // Outputs: Alice is 30 years old.
+            
+            
+8. java.time Package (Date and Time API):
+==========================================
+    -- The java.time package in Java 8 introduced a modern, robust, and immutable Date and Time API to address the shortcomings of the older java.util.Date and java.util.Calendar classes. 
+    -- This package simplifies handling date and time operations, ensures thread safety, and supports a wide range of use cases, including date manipulation, formatting, and time zones.
+    
+    1. Key Features of java.time Package:
+    ======================================
+       a. Immutability and Thread-Safety:
+       ===================================
+           -- All classes in java.time are immutable and thread-safe.
+           -- Operations like adding days or changing a time return a new instance instead of modifying the original.
+       
+       b. Clarity and Ease of Use:
+       ============================
+           -- Clear separation of date, time, and time zones (LocalDate, LocalTime, ZonedDateTime).
+           -- Fluent API style makes code more readable.
+        
+        c. Support for ISO and Custom Formats:
+       =======================================
+           -- Built-in support for ISO-8601 and customizable formats using DateTimeFormatter.
+
+       d. Time Zone Handling:
+       =======================
+           -- Comprehensive handling of time zones (ZoneId, ZonedDateTime).
+
+        e. Compatibility:
+       ==================
+           -- Conversion between the new API and the legacy API is supported.
+           
+    2. Core Classes in java.time:
+    ==============================
+        1. LocalDate:
+        ==============
+            -- Represents a date (year, month, day) without a time zone.
+            Common Use Cases:
+            ==================
+                -- Handling dates (e.g., birthdays, anniversaries).
+                -- Calculating differences or adding days.
+
+            Example:
+            =========
+                import java.time.LocalDate;
+
+                LocalDate today = LocalDate.now();
+                LocalDate birthday = LocalDate.of(1990, 5, 15);
+
+                // Adding days
+                LocalDate nextWeek = today.plusDays(7);
+
+                // Check if a date is before another
+                boolean isBefore = birthday.isBefore(today);
+
+                System.out.println("Today: " + today);
+                System.out.println("Next Week: " + nextWeek);
+                System.out.println("Is birthday in the past? " + isBefore);
+                
+        2. LocalTime:
+        ==============
+            -- Represents a time (hours, minutes, seconds, nanoseconds) without a time zone.
+            Common Use Cases:
+            ==================
+                -- Scheduling tasks.
+                -- Representing time-only data.
+
+            Example:
+            =========
+                import java.time.LocalTime;
+
+                LocalTime now = LocalTime.now();
+                LocalTime lunchTime = LocalTime.of(13, 30);
+
+                // Add hours
+                LocalTime evening = lunchTime.plusHours(5);
+
+                System.out.println("Current Time: " + now);
+                System.out.println("Evening Time: " + evening);
+                
+        3. LocalDateTime:
+        ==================
+            -- Represents a date and time without a time zone.
+            Common Use Cases:
+            ==================
+                -- Storing timestamps.
+                -- Representing date and time together.
+
+            Example:
+            =========
+                import java.time.LocalDateTime;
+
+                LocalDateTime current = LocalDateTime.now();
+                LocalDateTime meeting = LocalDateTime.of(2024, 12, 25, 14, 0);
+
+                // Add months
+                LocalDateTime nextMonth = current.plusMonths(1);
+
+                System.out.println("Current Date and Time: " + current);
+                System.out.println("Meeting Time: " + meeting);
+                System.out.println("Next Month: " + nextMonth);
+                
+        4. ZonedDateTime:
+        ==================
+            -- Represents a date and time with a specific time zone.
+            Common Use Cases:
+            ==================
+                -- Working with globalized applications.
+                -- Handling daylight savings.
+
+            Example:
+            =========
+                import java.time.ZonedDateTime;
+                import java.time.ZoneId;
+
+                ZonedDateTime nowInUTC = ZonedDateTime.now(ZoneId.of("UTC"));
+                ZonedDateTime nowInNY = ZonedDateTime.now(ZoneId.of("America/New_York"));
+
+                System.out.println("Time in UTC: " + nowInUTC);
+                System.out.println("Time in New York: " + nowInNY);
+                
+        5. Period and Duration:
+        ========================
+            -- Used for representing and calculating differences between dates and times.
+
+            -- Period: Represents differences in years, months, and days.
+            -- Duration: Represents differences in hours, minutes, seconds, and nanoseconds.
+
+            Example:
+            =========
+                import java.time.LocalDate;
+                import java.time.Period;
+                import java.time.Duration;
+                import java.time.LocalTime;
+
+                LocalDate startDate = LocalDate.of(2023, 1, 1);
+                LocalDate endDate = LocalDate.of(2024, 1, 1);
+                Period period = Period.between(startDate, endDate);
+
+                LocalTime startTime = LocalTime.of(8, 0);
+                LocalTime endTime = LocalTime.of(10, 30);
+                Duration duration = Duration.between(startTime, endTime);
+
+                System.out.println("Period: " + period.getYears() + " years, " + period.getMonths() + " months, "+ period.getDays() + " days");
+                System.out.println("Duration: " + duration.toHours() + " hours, "+ duration.toMinutes() + " minutes");
+                
+        6. DateTimeFormatter:
+        ======================
+            -- Used to format and parse dates and times.
+
+            Example:
+            =========
+                import java.time.LocalDateTime;
+                import java.time.format.DateTimeFormatter;
+
+                LocalDateTime dateTime = LocalDateTime.now();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+
+                String formattedDateTime = dateTime.format(formatter);
+
+                System.out.println("Formatted Date and Time: " + formattedDateTime);
+
+
+
+            
+            
+
+
+
+
+
+
+               
+        
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+            
+
+
+            
+    
+
+
+
+
+                
+
+
+
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+
